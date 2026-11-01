@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DİM SualUsta - Müəllimlər Üçün İmtahan və Test Hazırlayıcı</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Navigation & Controls -->
+  <header class="app-header no-print">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-badge">DİM</div>
+        <div class="brand-info">
+          <h1>Sual<span>Usta</span> <span class="version-tag">DİM Standartı 2026</span></h1>
+          <p>Müəllimlər üçün Milli İmtahan və Test Hazırlama Sistemi</p>
+        </div>
+      </div>
+
+      <div class="header-tools">
+        <div class="exam-meta-inputs">
+          <input type="text" id="examTitleInput" class="meta-input" value="BİRLƏŞMİŞ BURAXILIŞ İMTAHANI (DİM MODELİ)" placeholder="İmtahan adı...">
+          <select id="subjectSelect" class="meta-select">
+            <option value="Riyaziyyat" selected>📐 Riyaziyyat</option>
+            <option value="Azərbaycan dili">📖 Azərbaycan dili</option>
+            <option value="Tarix">🏛️ Tarix (Azərbaycan və Ümumi)</option>
+            <option value="Fizika">⚡ Fizika</option>
+            <option value="Kimya">🧪 Kimya</option>
+            <option value="Biologiya">🔬 Biologiya</option>
+            <option value="İngilis dili">🌍 İngilis dili</option>
+            <option value="Coğrafiya">🗺️ Coğrafiya</option>
+          </select>
+          <select id="gradeSelect" class="meta-select">
+            <option value="9-cu sinif Buraxılış">9-cu sinif (Buraxılış)</option>
+            <option value="11-ci sinif Buraxılış" selected>11-ci sinif (Buraxılış)</option>
+            <option value="Blok I Qrup">I İxtisas Qrupu (Blok)</option>
+            <option value="Blok II Qrup">II İxtisas Qrupu (Blok)</option>
+            <option value="Blok III Qrup">III İxtisas Qrupu (Blok)</option>
+            <option value="Blok IV Qrup">IV İxtisas Qrupu (Blok)</option>
+            <option value="KSQ / BSQ">Məktəb KSQ / BSQ</option>
+          </select>
+        </div>
+
+        <div class="header-actions">
+          <button id="loadSampleExamBtn" class="btn btn-secondary btn-sm" title="DİM nümunə suallarını yüklə">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Nümunə İmtahan
+          </button>
+          <button id="clearAllBtn" class="btn btn-ghost btn-sm" title="Bütün sualları təmizlə">Təmizlə</button>
+          <button id="printExamBtn" class="btn btn-primary btn-sm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect width="12" height="8" x="6" y="14"/>
+            </svg>
+            DİM Kitabçası Kimi Çap Et (PDF)
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="workspace-layout">
+    <!-- Left Panel: Teacher's Tools & Question Creator -->
+    <aside class="toolset-panel no-print">
+      <div class="panel-inner">
+        <!-- Question Type Navigation Tabs -->
+        <div class="toolset-header">
+          <h2>Sual Qurucusu</h2>
+          <span class="sub-label">DİM standartına uyğun sual növünü seçin:</span>
+        </div>
+
+        <div class="question-type-tabs">
+          <button class="type-tab active" data-type="qapali" title="5 variantlı klassik test">
+            <span class="tab-badge">A B C D E</span>
+            <span class="tab-title">Qapalı Test</span>
+          </button>
+          <button class="type-tab" data-type="hendese" title="Həndəsi fiqurlu riyaziyyat sualı">
+            <span class="tab-badge">📐 Fiqur</span>
+            <span class="tab-title">Həndəsə / Qrafik</span>
+          </button>
+          <button class="type-tab" data-type="aciq" title="Rəqəmlə kodlaşdırılan cavab">
+            <span class="tab-badge">🔢 Kod</span>
+            <span class="tab-title">Açıq (Kodlaşdırılan)</span>
+          </button>
+          <button class="type-tab" data-type="yazili" title="Geniş həll yolu tələb olunan">
+            <span class="tab-badge">✍️ Həll</span>
+            <span class="tab-title">Yazılı Həlli Açıq</span>
+          </button>
+          <button class="type-tab" data-type="uygunluq" title="1,2,3 - a,b,c,d,e uyğunlaşdırma">
+            <span class="tab-badge">🔄 1-a 2-b</span>
+            <span class="tab-title">Uyğunlaşdırma</span>
+          </button>
+          <button class="type-tab" data-type="situasiya" title="Mətn əsaslı situasiya və alt suallar">
+            <span class="tab-badge">📖 Mətn</span>
+            <span class="tab-title">Situasiya / Kontekst</span>
+          </button>
+        </div>
+
+        <!-- Math Symbol Quick Access Bar -->
+        <div class="symbol-toolbar">
+          <span class="toolbar-title">Riyazi Simvollar:</span>
+          <div class="symbol-buttons">
+            <button type="button" class="sym-btn" data-sym="√">√</button>
+            <button type="button" class="sym-btn" data-sym="²">x²</button>
+            <button type="button" class="sym-btn" data-sym="³">x³</button>
+            <button type="button" class="sym-btn" data-sym="π">π</button>
+            <button type="button" class="sym-btn" data-sym="α">α</button>
+            <button type="button" class="sym-btn" data-sym="β">β</button>
+            <button type="button" class="sym-btn" data-sym="∠">∠</button>
+            <button type="button" class="sym-btn" data-sym="△">△</button>
+            <button type="button" class="sym-btn" data-sym="⊥">⊥</button>
+            <button type="button" class="sym-btn" data-sym="∥">∥</button>
+            <button type="button" class="sym-btn" data-sym="°">°</button>
+            <button type="button" class="sym-btn" data-sym="∈">∈</button>
+            <button type="button" class="sym-btn" data-sym="∉">∉</button>
+            <button type="button" class="sym-btn" data-sym="∪">∪</button>
+            <button type="button" class="sym-btn" data-sym="∩">∩</button>
+            <button type="button" class="sym-btn" data-sym="≤">≤</button>
+            <button type="button" class="sym-btn" data-sym="≥">≥</button>
+            <button type="button" class="sym-btn" data-sym="≠">≠</button>
+            <button type="button" class="sym-btn" data-sym="±">±</button>
+            <button type="button" class="sym-btn" data-sym="·">·</button>
+            <button type="button" class="sym-btn" data-sym="≈">≈</button>
+            <button type="button" class="sym-btn" data-sym="∞">∞</button>
+          </div>
+        </div>
+
+        <!-- Geometry Shape Generator Section (Only visible for Hendese or togglable) -->
+        <div id="geometryStudioBox" class="geometry-studio-box">
+          <div class="geom-header">
+            <h3>📐 Həndəsi Fiqur Generatoru</h3>
+            <span class="badge-tag">DİM Rəsmləri</span>
+          </div>
+
+          <div class="geom-controls-grid">
+            <div class="form-group">
+              <label for="geomShapeType">Fiqur Növü:</label>
+              <select id="geomShapeType" class="form-control">
+                <option value="right_triangle">Düzbucaqlı Üçbucaq (Pifaqor)</option>
+                <option value="isosceles_triangle">Bərabəryanlı Üçbucaq</option>
+                <option value="triangle_height">Üçbucaq və Hündürlük</option>
+                <option value="circle_chord">Çevrə, Mərkəz və Vətər</option>
+                <option value="circle_tangent">Çevrə və Toxunan</option>
+                <option value="trapezoid">Trapesiya (Hündürlüklü)</option>
+                <option value="parallelogram">Paraleloqram və Bucağı</option>
+                <option value="coordinate_axes">Dekart Koordinat Müstəvisi</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="geomLabelA">Tərəf / Göstərici 1:</label>
+              <input type="text" id="geomLabelA" class="form-control" value="a = 6 sm" placeholder="Örn: 6 sm, katet">
+            </div>
+
+            <div class="form-group">
+              <label for="geomLabelB">Tərəf / Göstərici 2:</label>
+              <input type="text" id="geomLabelB" class="form-control" value="b = 8 sm" placeholder="Örn: 8 sm">
+            </div>
+
+            <div class="form-group">
+              <label for="geomLabelC">Axtarılan Tərəf / Bucaq (?):</label>
+              <input type="text" id="geomLabelC" class="form-control" value="c = ?" placeholder="Örn: c = ?">
+            </div>
+
+            <div class="form-group">
+              <label for="geomAngle">Bucaq (α və ya dərəcə):</label>
+              <input type="text" id="geomAngle" class="form-control" value="α" placeholder="Örn: 30°, α">
+            </div>
+          </div>
+
+          <!-- Live SVG Preview -->
+          <div class="geom-preview-wrap">
+            <span class="preview-tag">Canlı Fiqur Görünüşü:</span>
+            <div id="geomSvgContainer" class="geom-svg-card">
+              <!-- SVG dynamically rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Question Creation Form -->
+        <form id="questionForm" class="question-builder-form">
+          <input type="hidden" id="editingQuestionId" value="">
+
+          <!-- Common Meta: Points and Difficulty -->
+          <div class="form-meta-row">
+            <div class="form-group flex-1">
+              <label for="questionPoints">Sual Balı:</label>
+              <select id="questionPoints" class="form-control">
+                <option value="1">1 bal (Standart)</option>
+                <option value="1.5">1.5 bal</option>
+                <option value="2" selected>2 bal</option>
+                <option value="3">3 bal (Açıq / Situasiya)</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="questionDifficulty">Çətinlik Səviyyəsi:</label>
+              <select id="questionDifficulty" class="form-control">
+                <option value="Asan">🟢 Asan</option>
+                <option value="Orta" selected>🟡 Orta (DİM Standart)</option>
+                <option value="Çətin">🔴 Çətin (Fərqləndirici)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Question Prompt / Text -->
+          <div class="form-group">
+            <label for="questionText">Sualın Mətni / Şərti *</label>
+            <textarea id="questionText" class="form-control text-area" rows="3" placeholder="Sualın şərtini daxil edin. Yuxarıdakı riyazi simvollardan istifadə edə bilərsiniz..." required></textarea>
+          </div>
+
+          <!-- Dynamic Input Sections based on Question Type -->
+
+          <!-- 1. Qapalı və ya Həndəsi Fiqurlu Suallar üçün Variantlar (A, B, C, D, E) -->
+          <div id="optionsGroup" class="form-dynamic-block">
+            <div class="block-header">
+              <span>Variantlar (Doğru cavabı radio ilə işarələyin):</span>
+            </div>
+            <div class="options-inputs-list">
+              <div class="option-row">
+                <label class="opt-label"><input type="radio" name="correctOption" value="A" checked> A)</label>
+                <input type="text" id="optA" class="form-control opt-input" placeholder="A variantının mətni..." required>
+              </div>
+              <div class="option-row">
+                <label class="opt-label"><input type="radio" name="correctOption" value="B"> B)</label>
+                <input type="text" id="optB" class="form-control opt-input" placeholder="B variantının mətni..." required>
+              </div>
+              <div class="option-row">
+                <label class="opt-label"><input type="radio" name="correctOption" value="C"> C)</label>
+                <input type="text" id="optC" class="form-control opt-input" placeholder="C variantının mətni..." required>
+              </div>
+              <div class="option-row">
+                <label class="opt-label"><input type="radio" name="correctOption" value="D"> D)</label>
+                <input type="text" id="optD" class="form-control opt-input" placeholder="D variantının mətni..." required>
+              </div>
+              <div class="option-row">
+                <label class="opt-label"><input type="radio" name="correctOption" value="E"> E)</label>
+                <input type="text" id="optE" class="form-control opt-input" placeholder="E variantının mətni..." required>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Açıq / Kodlaşdırılan Sual üçün Cavab Xanaları -->
+          <div id="openAnswerGroup" class="form-dynamic-block hidden">
+            <div class="block-header">
+              <span>DİM Kodlaşdırma Cavabı (Yalnız ədəd və ya qısa ifadə):</span>
+            </div>
+            <div class="form-group">
+              <label for="openCorrectAnswer">Düzgün Ədədi Cavab:</label>
+              <input type="text" id="openCorrectAnswer" class="form-control" placeholder="Məsələn: 24, 150, -5">
+              <span class="help-text">Şagird bu ədədi cavab kartındakı xanalara qeyd edərək dairələri qaralayacaq.</span>
+            </div>
+          </div>
+
+          <!-- 3. Yazılı Həlli Tələb Olunan Açıq Sual üçün -->
+          <div id="writtenAnswerGroup" class="form-dynamic-block hidden">
+            <div class="block-header">
+              <span>Mərhələli Həll və Qiymətləndirmə Meyarları:</span>
+            </div>
+            <div class="form-group">
+              <label for="writtenSolutionSteps">Düzgün Həll Yolu / Meyarlar:</label>
+              <textarea id="writtenSolutionSteps" class="form-control text-area" rows="2" placeholder="1-ci mərhələ: Şərtin qurulması (1 bal)&#10;2-ci mərhələ: Tənliyin həlli və son cavab (1 bal)"></textarea>
+            </div>
+          </div>
+
+          <!-- 4. Uyğunlaşdırma Sualı üçün Sütunlar -->
+          <div id="matchingGroup" class="form-dynamic-block hidden">
+            <div class="block-header">
+              <span>Uyğunlaşdırma Bəndləri:</span>
+            </div>
+            <div class="matching-grid-inputs">
+              <div class="matching-col">
+                <strong>Sol Tərəf (1, 2, 3):</strong>
+                <input type="text" id="matchLeft1" class="form-control" placeholder="1. y = 2x + 1">
+                <input type="text" id="matchLeft2" class="form-control" placeholder="2. y = x² - 4">
+                <input type="text" id="matchLeft3" class="form-control" placeholder="3. y = 3 / x">
+              </div>
+              <div class="matching-col">
+                <strong>Sağ Tərəf (a, b, c, d, e):</strong>
+                <input type="text" id="matchRightA" class="form-control" placeholder="a. Qrafiki paraboladır">
+                <input type="text" id="matchRightB" class="form-control" placeholder="b. Qrafiki düz xəttdir">
+                <input type="text" id="matchRightC" class="form-control" placeholder="c. Qrafiki hiperboladır">
+                <input type="text" id="matchRightD" class="form-control" placeholder="d. Koordinat başlanğıcından keçir">
+                <input type="text" id="matchRightE" class="form-control" placeholder="e. Təpə nöqtəsi (0, -4)-dür">
+              </div>
+            </div>
+            <div class="form-group mt-2">
+              <label for="matchCorrectCode">Düzgün Uyğunluq Kodu:</label>
+              <input type="text" id="matchCorrectCode" class="form-control" placeholder="Məsələn: 1-b; 2-a,e; 3-c">
+            </div>
+          </div>
+
+          <!-- 5. Situasiya Sualı üçün Alt Suallar -->
+          <div id="situationGroup" class="form-dynamic-block hidden">
+            <div class="block-header">
+              <span>Situasiya Konteksti və Alt Suallar:</span>
+            </div>
+            <div class="form-group">
+              <label for="situationContext">Giriş Situasiyası / Mətn:</label>
+              <textarea id="situationContext" class="form-control text-area" rows="3" placeholder="Fermer sahəni şumlayarkən traktor hər saatda..."></textarea>
+            </div>
+            <div class="situation-sub-questions">
+              <div class="form-group">
+                <label>Alt Sual 1:</label>
+                <input type="text" id="subQ1" class="form-control" placeholder="Traktorun 3 saatda şumladığı sahəni tapın.">
+              </div>
+              <div class="form-group">
+                <label>Alt Sual 2:</label>
+                <input type="text" id="subQ2" class="form-control" placeholder="Yanacaq sərfiyyatını hesablayın.">
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit / Action Buttons -->
+          <div class="form-actions-row">
+            <button type="submit" id="saveQuestionBtn" class="btn btn-primary w-full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Sualı İmtahana Əlavə Et
+            </button>
+            <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden">Ləğv et</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Right Panel: DİM Official Exam Booklet Live View -->
+    <section class="exam-booklet-panel">
+      <!-- Toolbar over booklet -->
+      <div class="booklet-toolbar no-print">
+        <div class="booklet-stats">
+          <span class="stat-pill">Ümumi Sual: <strong id="totalQuestionsCount">0</strong></span>
+          <span class="stat-pill">Maksimal Bal: <strong id="totalPointsSum">0</strong></span>
+          <span class="stat-pill">Fənn: <strong id="displaySubjectName">Riyaziyyat</strong></span>
+        </div>
+        <div class="view-toggles">
+          <button id="toggleAnswerKeyBtn" class="btn btn-sm btn-outline">
+            🔑 Cavab Açarlarını Göstər
+          </button>
+          <button id="toggleBubbleSheetBtn" class="btn btn-sm btn-outline">
+            📋 DİM Cavab Kartı Vərəqi
+          </button>
+        </div>
+      </div>
+
+      <!-- DİM EXAM BOOKLET PAPER (Styled exactly like authentic DIM exam booklet) -->
+      <div class="dim-paper-sheet" id="dimPaperSheet">
+        <!-- Official Header -->
+        <header class="dim-exam-header">
+          <div class="dim-emblem-box">
+            <div class="dim-seal">DİM</div>
+          </div>
+          <div class="dim-title-center">
+            <h2>AZƏRBAYCAN RESPUBLİKASI DÖVLƏT İMTAHAN MƏRKƏZİ</h2>
+            <h3 id="paperExamTitle">BURAXILIŞ İMTAHANI MODELİ</h3>
+            <div class="dim-sub-bar">
+              <span id="paperSubject">Fənn: <strong>Riyaziyyat</strong></span>
+              <span id="paperGrade">Səviyyə: <strong>11-ci sinif</strong></span>
+              <span>Variant: <strong>A</strong></span>
+              <span>İmtahan Müddəti: <strong>180 dəqiqə</strong></span>
+            </div>
+          </div>
+          <div class="dim-code-box">
+            <span class="qr-placeholder">■■■■<br>■  ■<br>■■■■</span>
+            <span class="kitabca-kod">KOD: 2026-A</span>
+          </div>
+        </header>
+
+        <div class="dim-rules-banner">
+          <p><strong>DİQQƏT:</strong> Hər bir sualı diqqətlə oxuyun. Qapalı suallarda 5 variantdan yalnız biri düzgündür. Açıq suallarda aldığınız cavabı cavab kartında müvafiq xanalara yazın və uyğun dairələri qaralayın.</p>
+        </div>
+
+        <!-- Two-column DİM Question Flow -->
+        <div class="dim-questions-flow" id="dimQuestionsContainer">
+          <!-- Dynamically populated questions list -->
+        </div>
+
+        <!-- Empty state when no questions -->
+        <div id="noQuestionsNotice" class="dim-empty-state">
+          <div class="empty-icon">📝</div>
+          <h3>Hələ heç bir sual əlavə olunmayıb</h3>
+          <p>Sol tərəfdəki alətlər panelindən yeni sual hazırlayın və ya yuxarıdakı <strong>"Nümunə İmtahan"</strong> düyməsinə klikləyərək rəsmi DİM modeli ilə tanış olun.</p>
+        </div>
+
+        <!-- Optical Bubble Answer Sheet (Cavab Kartı Şablonu) -->
+        <section id="bubbleSheetSection" class="bubble-sheet-card hidden">
+          <div class="sheet-header">
+            <h4>DİM STANDART CAVAB KARTI (ŞAGİRD ÜÇÜN KODLAŞDIRMA VƏRƏQİ)</h4>
+            <div class="student-info-lines">
+              <span>Şagirdin S.A.A: __________________________________</span>
+              <span>Məktəb / Sinif: __________________</span>
+              <span>Tarix: ____/____/2026</span>
+            </div>
+          </div>
+          <div class="bubble-grid" id="bubbleGridContainer">
+            <!-- Dynamically generated bubble rows -->
+          </div>
+        </section>
+
+        <!-- Official Answer Key (Cavablar Açarı) -->
+        <section id="answerKeySection" class="answer-key-card hidden">
+          <div class="key-header">
+            <h4>🔑 DÜZGÜN CAVABLAR VƏ QİYMƏTLƏNDİRMƏ ŞKALASI (MÜƏLLİM ÜÇÜN)</h4>
+          </div>
+          <div class="key-table-wrapper">
+            <table class="key-table" id="keyTable">
+              <thead>
+                <tr>
+                  <th>Sual №</th>
+                  <th>Sual Tipi</th>
+                  <th>Düzgün Cavab / Qeyd</th>
+                  <th>Bal</th>
+                </tr>
+              </thead>
+              <tbody id="keyTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Official Footer -->
+        <footer class="dim-paper-footer">
+          <div class="footer-rule"></div>
+          <div class="footer-content">
+            <span>Dövlət İmtahan Mərkəzi test standartları əsasında hazırlanmışdır.</span>
+            <span id="pageCountDisplay">Səhifə 1 / 1</span>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-box hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

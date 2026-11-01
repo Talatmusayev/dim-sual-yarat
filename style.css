@@ -1,0 +1,1098 @@
+/* ==========================================================================
+   DİM SualUsta - Müəllimlər üçün İmtahan Hazırlayıcı Stilləri
+   ========================================================================== */
+
+:root {
+  --primary: #1e3a8a;        /* Official DİM Navy Blue */
+  --primary-hover: #172554;
+  --primary-light: #eff6ff;
+  --primary-border: #bfdbfe;
+
+  --accent-gold: #b45309;    /* Official seal gold accent */
+  --accent-green: #15803d;
+  --accent-red: #b91c1c;
+
+  --bg-app: #f1f5f9;
+  --bg-panel: #ffffff;
+  --border-ui: #cbd5e1;
+  --border-light: #e2e8f0;
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #334155;
+
+  --font-ui: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-exam: 'STIX Two Text', 'Times New Roman', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --shadow-paper: 0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Top Navigation Bar */
+.app-header {
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: 1750px;
+  margin: 0 auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-badge {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.3);
+}
+
+.brand-info h1 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.brand-info h1 span {
+  color: var(--primary);
+}
+
+.version-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: var(--text-muted);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+
+.brand-info p {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.exam-meta-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meta-input {
+  font-family: var(--font-ui);
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: #f8fafc;
+  min-width: 280px;
+}
+
+.meta-select {
+  font-family: var(--font-ui);
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-sm {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(30, 58, 138, 0.25);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  border-color: var(--border-ui);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.btn-outline {
+  background: #ffffff;
+  border-color: var(--border-ui);
+  color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+}
+
+.w-full { width: 100%; }
+.mt-2 { margin-top: 0.5rem; }
+.hidden { display: none !important; }
+
+/* Main Workspace Layout */
+.workspace-layout {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (max-width: 1100px) {
+  .workspace-layout {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+/* Left Panel: Teacher's Tools & Creator */
+.toolset-panel {
+  background: #ffffff;
+  border-right: 1px solid var(--border-ui);
+  overflow-y: auto;
+  height: 100%;
+}
+
+.panel-inner {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.toolset-header h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.sub-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Question Type Navigation Tabs */
+.question-type-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.type-tab {
+  background: #f8fafc;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.type-tab:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.type-tab.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.tab-badge {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.tab-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Math Symbol Quick Toolbar */
+.symbol-toolbar {
+  background: #f8fafc;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem;
+}
+
+.toolbar-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.symbol-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.sym-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-ui);
+  border-radius: 4px;
+  width: 32px;
+  height: 30px;
+  font-family: var(--font-exam);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  transition: all 0.1s ease;
+}
+
+.sym-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Geometry Studio Box */
+.geometry-studio-box {
+  background: #f8fafc;
+  border: 1.5px dashed #94a3b8;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.geom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.geom-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.badge-tag {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.geom-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.geom-controls-grid .form-group:first-child {
+  grid-column: span 2;
+}
+
+.geom-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.preview-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.geom-svg-card {
+  background: #ffffff;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+}
+
+/* Forms */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.form-control {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: #ffffff;
+  color: var(--text-main);
+  transition: border-color 0.15s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-border);
+}
+
+.form-control.text-area {
+  font-family: var(--font-exam);
+  font-size: 1rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.form-meta-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.flex-1 { flex: 1; }
+
+.form-dynamic-block {
+  background: #f8fafc;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.block-header {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Options Row */
+.options-inputs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.opt-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 48px;
+  cursor: pointer;
+}
+
+.opt-input {
+  flex: 1;
+}
+
+/* Matching inputs */
+.matching-grid-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.matching-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.matching-col strong {
+  margin-bottom: 0.2rem;
+  color: var(--text-dim);
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.form-actions-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Right Panel: Official Exam Booklet Live View */
+.exam-booklet-panel {
+  background: #475569;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.booklet-toolbar {
+  width: 100%;
+  max-width: 900px;
+  background: #1e293b;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  color: #ffffff;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.booklet-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.stat-pill {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.stat-pill strong {
+  color: #38bdf8;
+}
+
+.view-toggles {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* The Authentic DİM Paper Sheet (A4 Proportion) */
+.dim-paper-sheet {
+  background: #ffffff;
+  width: 100%;
+  max-width: 900px;
+  min-height: 1150px;
+  padding: 2.25rem 2.5rem;
+  box-shadow: var(--shadow-paper);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: var(--font-exam);
+  color: #000000;
+}
+
+/* Official Header */
+.dim-exam-header {
+  border-bottom: 2px solid #000000;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.dim-emblem-box {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dim-seal {
+  width: 52px;
+  height: 52px;
+  border: 2px double #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  font-family: var(--font-ui);
+}
+
+.dim-title-center {
+  text-align: center;
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.dim-title-center h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+}
+
+.dim-title-center h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.dim-sub-bar {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  font-size: 0.85rem;
+  border-top: 1px solid #000000;
+  padding-top: 0.35rem;
+  font-family: var(--font-ui);
+}
+
+.dim-code-box {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.1;
+}
+
+.qr-placeholder {
+  display: inline-block;
+  background: #f1f5f9;
+  border: 1px solid #94a3b8;
+  padding: 0.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 0.25rem;
+}
+
+.kitabca-kod {
+  display: block;
+  font-weight: 700;
+}
+
+.dim-rules-banner {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.825rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-ui);
+  line-height: 1.4;
+}
+
+/* Two-column DİM Questions Flow */
+.dim-questions-flow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem 2.25rem;
+  flex: 1;
+  align-content: start;
+}
+
+@media (max-width: 768px) {
+  .dim-questions-flow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Individual Question Item */
+.dim-question-item {
+  position: relative;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dotted #cbd5e1;
+}
+
+.dim-q-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.dim-q-num {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #000000;
+  display: inline-block;
+  margin-right: 0.35rem;
+}
+
+.dim-q-badge-meta {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+}
+
+.dim-q-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.q-action-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  color: #94a3b8;
+  border-radius: 3px;
+}
+
+.q-action-btn:hover {
+  color: var(--primary);
+  background: #f1f5f9;
+}
+
+.q-action-btn.delete:hover {
+  color: var(--accent-red);
+}
+
+.dim-q-text {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: #000000;
+  margin-bottom: 0.75rem;
+}
+
+/* Question Figure SVG */
+.dim-q-figure {
+  margin: 0.75rem 0;
+  text-align: center;
+  background: #ffffff;
+  padding: 0.5rem;
+}
+
+.dim-q-figure svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Multiple Choice Options */
+.dim-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 1rem;
+}
+
+.dim-opt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  line-height: 1.35;
+}
+
+.opt-letter {
+  font-weight: 700;
+  min-width: 22px;
+}
+
+/* Open / Coded answer box in booklet */
+.dim-coded-box {
+  border: 1.5px solid #000000;
+  padding: 0.5rem 0.75rem;
+  background: #fcfcfc;
+  margin-top: 0.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dim-coded-box .box-label {
+  font-weight: 700;
+}
+
+.dim-coded-box .answer-grid-mock {
+  display: flex;
+  gap: 3px;
+}
+
+.grid-cell {
+  width: 20px;
+  height: 24px;
+  border: 1px solid #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Written solution area */
+.dim-written-box {
+  border: 1px solid #94a3b8;
+  height: 80px;
+  background-image: repeating-linear-gradient(white, white 19px, #e2e8f0 20px);
+  padding: 0.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+/* Matching display in booklet */
+.dim-matching-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.match-list-left, .match-list-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Empty State */
+.dim-empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
+
+.dim-empty-state h3 {
+  font-size: 1.25rem;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-ui);
+}
+
+.dim-empty-state p {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Bubble Answer Sheet Section */
+.bubble-sheet-card {
+  margin-top: 2rem;
+  border: 2px solid #000000;
+  padding: 1.25rem;
+  page-break-before: always;
+}
+
+.sheet-header h4 {
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-ui);
+}
+
+.student-info-lines {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bubble-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem 1.5rem;
+  font-family: var(--font-ui);
+}
+
+.bubble-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dotted #cbd5e1;
+  padding-bottom: 0.25rem;
+}
+
+.bubble-q-num {
+  font-size: 0.85rem;
+  font-weight: 700;
+  width: 28px;
+}
+
+.bubbles-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.bubble-circle {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Official Answer Key Table */
+.answer-key-card {
+  margin-top: 2rem;
+  border: 2px solid var(--primary);
+  background: #f8fafc;
+  padding: 1.25rem;
+  page-break-before: always;
+}
+
+.key-header h4 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  font-family: var(--font-ui);
+}
+
+.key-table-wrapper {
+  overflow-x: auto;
+}
+
+.key-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+}
+
+.key-table th, .key-table td {
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.key-table th {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.key-table tr:nth-child(even) {
+  background: #ffffff;
+}
+
+/* Official Footer */
+.dim-paper-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  font-family: var(--font-ui);
+}
+
+.footer-rule {
+  height: 1px;
+  background: #000000;
+  margin-bottom: 0.5rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+/* Toast */
+.toast-box {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #1e293b;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  animation: toastFade 0.2s ease-out;
+}
+
+@keyframes toastFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Print Mode (Rəsmi DİM İmtahan Kağızı Çap Formatı)
+   ========================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .no-print,
+  .app-header,
+  .toolset-panel,
+  .booklet-toolbar,
+  .dim-q-actions,
+  .dim-q-badge-meta,
+  .toast-box {
+    display: none !important;
+  }
+
+  .workspace-layout {
+    display: block !important;
+  }
+
+  .exam-booklet-panel {
+    background: #ffffff !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .dim-paper-sheet {
+    max-width: 100% !important;
+    box-shadow: none !important;
+    padding: 1cm 1.5cm !important;
+    min-height: auto !important;
+  }
+
+  .dim-questions-flow {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5rem 2rem !important;
+  }
+
+  .dim-question-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+}

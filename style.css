@@ -178,7 +178,7 @@ body {
   background: var(--primary-hover);
 }
 
-/* Yüklə / Download Düyməsi (Gözəçarpan və zərif) */
+/* Yüklə / Download Düyməsi */
 .btn-download {
   background: linear-gradient(135deg, #1e3a8a, #2563eb);
   color: #ffffff;
@@ -228,6 +228,10 @@ body {
   border-color: var(--primary-border);
 }
 
+.text-red {
+  color: var(--accent-red) !important;
+}
+
 .w-full { width: 100%; }
 .mt-2 { margin-top: 0.5rem; }
 .hidden { display: none !important; }
@@ -235,18 +239,18 @@ body {
 /* Main Workspace Layout */
 .workspace-layout {
   display: grid;
-  grid-template-columns: 500px 1fr;
+  grid-template-columns: 480px 1fr;
   flex: 1;
   overflow: hidden;
 }
 
 @media (max-width: 1200px) {
   .workspace-layout {
-    grid-template-columns: 440px 1fr;
+    grid-template-columns: 430px 1fr;
   }
 }
 
-/* Left Panel: Teacher's Tools & Shape Library */
+/* Left Panel: Teacher's Tools */
 .toolset-panel {
   background: #ffffff;
   border-right: 1px solid var(--border-ui);
@@ -307,251 +311,95 @@ body {
 }
 
 /* ==========================================================================
-   HAZIR FİQURLAR QALEREYASI (Shape Library & Categories)
+   FİQUR KONTROL SAHƏSİ (İlkin olaraq bağlı, müəllim istəsə açır)
    ========================================================================== */
-.shape-library-section {
+.figure-control-card {
   background: #f8fafc;
-  border: 1.5px solid #cbd5e1;
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.library-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.library-header h3 {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--primary);
-}
-
-.library-tip {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-/* Category Filter Tabs */
-.shape-cat-filters {
-  display: flex;
-  gap: 0.35rem;
-  overflow-x: auto;
-  padding-bottom: 0.25rem;
-}
-
-.shape-cat-btn {
-  background: #ffffff;
-  border: 1px solid var(--border-ui);
-  border-radius: 20px;
-  padding: 0.3rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-dim);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-
-.shape-cat-btn:hover {
-  background: #f1f5f9;
-}
-
-.shape-cat-btn.active {
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
-}
-
-/* Visual Shape Cards Grid */
-.shape-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding-right: 0.25rem;
-}
-
-.shape-thumb-card {
-  background: #ffffff;
-  border: 1.5px solid var(--border-ui);
+  border: 1px dashed #cbd5e1;
   border-radius: var(--radius-sm);
-  padding: 0.4rem;
+  padding: 0.65rem;
+}
+
+.figure-not-attached {
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
+}
+
+.btn-open-studio {
+  background: #ffffff;
+  border: 1.5px solid var(--primary-border);
+  color: var(--primary);
+  padding: 0.6rem 0.85rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  min-height: 85px;
-  text-align: center;
-}
-
-.shape-thumb-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-1px);
+  gap: 0.5rem;
   box-shadow: var(--shadow-sm);
 }
 
-.shape-thumb-card.active {
-  border-color: var(--primary);
+.btn-open-studio:hover {
   background: var(--primary-light);
-  box-shadow: 0 0 0 2px var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
-.shape-thumb-svg {
-  width: 100%;
-  height: 50px;
+.btn-open-studio .btn-icon {
+  font-size: 1.1rem;
+}
+
+.help-hint {
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* When figure is attached */
+.figure-attached-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1.5px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+.attached-thumb {
+  width: 60px;
+  height: 45px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
-.shape-thumb-svg svg {
+.attached-thumb svg {
   max-width: 100%;
   max-height: 100%;
 }
 
-.shape-thumb-title {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1.15;
-}
-
-/* Selected Shape Editor Box */
-.shape-editor-box {
-  background: #ffffff;
-  border: 1px solid var(--border-ui);
-  border-radius: var(--radius-sm);
-  padding: 0.85rem;
+.attached-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.25rem;
 }
 
-.shape-editor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: 0.4rem;
-}
-
-.selected-shape-title {
-  font-size: 0.825rem;
-  font-weight: 800;
+.attached-title {
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--primary);
 }
 
-.shape-preview-frame {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--radius-sm);
-  padding: 0.5rem;
+.attached-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 150px;
-}
-
-/* Shape Inputs Grid */
-.shape-inputs-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-}
-
-.shape-input-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.shape-input-row label {
-  font-size: 0.725rem;
-  font-weight: 700;
-  color: var(--text-dim);
-}
-
-.input-with-quick {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.input-with-quick input {
-  padding-right: 2rem !important;
-  font-size: 0.85rem !important;
-}
-
-.quick-val-btn {
-  position: absolute;
-  right: 4px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 3px;
-  width: 22px;
-  height: 22px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: var(--accent-red);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.quick-val-btn:hover {
-  background: #fee2e2;
-  border-color: var(--accent-red);
-}
-
-/* Quick Symbols Bar */
-.quick-symbols-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  flex-wrap: wrap;
-  padding-top: 0.35rem;
-  border-top: 1px dashed var(--border-light);
-}
-
-.qs-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.qs-btn {
-  background: #f8fafc;
-  border: 1px solid var(--border-ui);
-  border-radius: 4px;
-  padding: 0.15rem 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--text-dim);
-  transition: all 0.1s ease;
-}
-
-.qs-btn:hover {
-  background: var(--primary-light);
-  color: var(--primary);
-  border-color: var(--primary-border);
-}
-
-.qs-btn.highlight {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #b91c1c;
-  font-weight: 700;
+  gap: 0.4rem;
 }
 
 /* Math Symbol Quick Toolbar */
@@ -1198,6 +1046,625 @@ body {
 }
 
 /* ==========================================================================
+   POWERPOINT ÜSLUBLU HƏNDƏSƏ STUDİYASI (MODAL) STILLƏRİ
+   ========================================================================== */
+.shape-studio-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.studio-window {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 1060px;
+  max-height: 92vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: studioPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes studioPop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.studio-header {
+  background: #1e293b;
+  color: #ffffff;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.studio-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.studio-badge {
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+.studio-title-group h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.studio-title-group p {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.studio-close-x {
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.studio-close-x:hover {
+  color: #ffffff;
+}
+
+/* PowerPoint Ribbon Bar */
+.powerpoint-ribbon {
+  background: #f1f5f9;
+  border-bottom: 2px solid #cbd5e1;
+  padding: 0.65rem 1.25rem;
+  display: flex;
+  align-items: stretch;
+  gap: 1.25rem;
+  overflow-x: auto;
+}
+
+.ribbon-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-right: 1.25rem;
+  border-right: 1px solid #cbd5e1;
+  flex-shrink: 0;
+}
+
+.ribbon-block:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.ribbon-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.04em;
+}
+
+.ribbon-select {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.ribbon-btn-row {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.ribbon-tool-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-ui);
+  border-radius: 4px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ribbon-tool-btn:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+  border-color: #94a3b8;
+}
+
+.ribbon-tool-btn.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: 0 0 0 1.5px #2563eb;
+}
+
+.ribbon-action-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-ui);
+  border-radius: 4px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ribbon-action-btn:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+
+.ribbon-action-btn.danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.ribbon-action-btn.danger:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.ribbon-toggle-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-ui);
+  border-radius: 4px;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ribbon-toggle-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.ribbon-toggle-btn.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.ribbon-colors-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.15rem;
+}
+
+.color-circle-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.color-circle-btn:hover {
+  transform: scale(1.15);
+}
+
+.color-circle-btn.active {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--primary);
+  transform: scale(1.1);
+}
+
+.ribbon-selects-row {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.ribbon-mini-select {
+  font-family: var(--font-ui);
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border-ui);
+  border-radius: 4px;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Studio Work Area */
+.studio-work-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 440px;
+}
+
+@media (max-width: 900px) {
+  .studio-work-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.studio-canvas-panel {
+  background: #f1f5f9;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-right: 1px solid var(--border-ui);
+  user-select: none;
+}
+
+.canvas-artboard {
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 580px;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-artboard svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* SVG Interactive Handles & Elements */
+.canvas-handle {
+  cursor: grab;
+  transition: r 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
+}
+
+.canvas-handle:hover {
+  cursor: grab;
+  r: 8px !important;
+  filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.6));
+}
+
+.canvas-handle.active-drag {
+  cursor: grabbing !important;
+  r: 9px !important;
+  stroke-width: 3px !important;
+}
+
+.canvas-handle.vertex-handle {
+  fill: #ffffff;
+  stroke: #2563eb;
+  stroke-width: 2.5px;
+}
+
+.canvas-handle.vertex-handle:hover {
+  fill: #dbeafe;
+}
+
+.canvas-handle.line-handle {
+  fill: #ffffff;
+  stroke: #dc2626;
+  stroke-width: 2.5px;
+}
+
+.canvas-handle.line-handle:hover {
+  fill: #fee2e2;
+}
+
+.canvas-line-interactive {
+  cursor: pointer;
+  transition: stroke-width 0.1s ease;
+}
+
+.canvas-line-interactive:hover {
+  stroke-width: 4px !important;
+}
+
+.canvas-text-interactive {
+  cursor: move;
+  user-select: none;
+  font-family: 'STIX Two Text', serif;
+}
+
+.canvas-text-interactive:hover {
+  fill: #2563eb !important;
+  font-weight: 700 !important;
+}
+
+/* Sərbəst Mətn Qutusu (Text Bar) İnteraktiv Kətan Stilləri */
+.canvas-text-box-body {
+  cursor: move;
+  transition: stroke 0.15s ease, stroke-width 0.15s ease, fill 0.15s ease;
+  user-select: none;
+}
+
+.canvas-text-box-body:hover {
+  fill: #ffffff !important;
+  stroke: #1d4ed8 !important;
+  stroke-width: 2.2px !important;
+  filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.25));
+}
+
+.canvas-text-box-body.active-drag {
+  cursor: grabbing !important;
+  stroke: #1e40af !important;
+  stroke-width: 2.5px !important;
+}
+
+.text-corner-handle {
+  fill: #ffffff;
+  stroke: #2563eb;
+  stroke-width: 2px;
+  transition: r 0.15s ease, fill 0.15s ease;
+}
+
+.text-corner-handle:hover {
+  fill: #3b82f6 !important;
+  stroke: #1d4ed8 !important;
+  r: 7px !important;
+}
+
+.text-corner-handle[data-corner="tl"],
+.text-corner-handle[data-corner="br"] {
+  cursor: nwse-resize !important;
+}
+
+.text-corner-handle[data-corner="tr"],
+.text-corner-handle[data-corner="bl"] {
+  cursor: nesw-resize !important;
+}
+
+.text-del-btn {
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.text-del-btn:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 1px 3px rgba(239, 68, 68, 0.5));
+}
+
+.canvas-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Studio Sidebar */
+.studio-controls-sidebar {
+  background: #ffffff;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.sidebar-box h4 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.15rem;
+}
+
+.sidebar-tip {
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.studio-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.studio-field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.field-with-quick {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.field-with-quick input, .studio-field input {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.field-with-quick input {
+  padding-right: 2rem !important;
+}
+
+.field-with-quick input:focus, .studio-field input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-border);
+}
+
+.quick-q-btn {
+  position: absolute;
+  right: 4px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-q-btn:hover {
+  background: #fecaca;
+}
+
+/* Sərbəst Mətn / Yazı Qutusu (Text Bar) Yan Panel Stilləri */
+.text-bar-sidebar-group {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.text-bar-sidebar-group label {
+  color: #1d4ed8 !important;
+  font-weight: 800 !important;
+}
+
+.text-bar-sidebar-group .field-with-quick input {
+  padding-right: 4.2rem !important;
+  background: #ffffff;
+}
+
+.quick-add-btn {
+  position: absolute;
+  right: 4px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-add-btn:hover {
+  background: #1d4ed8;
+  transform: scale(1.03);
+}
+
+.text-bar-quick-tags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.field-subtext {
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-top: 0.35rem;
+  display: block;
+  line-height: 1.3;
+}
+
+.studio-quick-helpers {
+  border-top: 1px dashed var(--border-ui);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.sq-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.sq-pills {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.sq-pill {
+  background: #f1f5f9;
+  border: 1px solid var(--border-ui);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.sq-pill:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+.sq-pill.target {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+  font-weight: 700;
+}
+
+.studio-bottom-actions {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.85rem;
+}
+
+.studio-bottom-actions .btn {
+  flex: 1;
+}
+
+/* ==========================================================================
    DOWNLOAD MODAL STYLES (Testi Yükləmə Pəncərəsi)
    ========================================================================== */
 .modal-backdrop {
@@ -1354,7 +1821,7 @@ body {
   font-size: 0.875rem;
   font-weight: 600;
   box-shadow: var(--shadow-lg);
-  z-index: 1100;
+  z-index: 1200;
   animation: toastFade 0.2s ease-out;
 }
 
@@ -1381,6 +1848,7 @@ body {
   .dim-q-actions,
   .dim-q-badge-meta,
   .modal-backdrop,
+  .shape-studio-modal,
   .toast-box {
     display: none !important;
   }

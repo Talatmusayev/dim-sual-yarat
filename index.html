@@ -56,7 +56,7 @@
         <button id="clearAllBtn" class="btn btn-ghost btn-sm" title="Bütün sualları təmizlə">
           Təmizlə
         </button>
-        <!-- Print əvəzinə tək və rahat Yüklə düyməsi -->
+        <!-- Testi Yüklə Düyməsi -->
         <button id="downloadExamBtn" class="btn btn-download btn-sm">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -71,16 +71,12 @@
 
   <!-- Main Workspace -->
   <main class="workspace-layout">
-    <!-- Left Panel: Teacher's Tools & Shape Library -->
+    <!-- Left Panel: Teacher's Tools & Question Creator -->
     <aside class="toolset-panel no-print">
       <div class="panel-inner">
-        <!-- Question Type Navigation Tabs -->
+        <!-- Question Type Navigation Tabs (Qapalı, Açıq, Yazılı, Uyğunluq, Situasiya) -->
         <div class="question-type-tabs">
-          <button class="type-tab active" data-type="hendese" title="Həndəsi fiqurlu riyaziyyat sualı">
-            <span class="tab-badge">📐 Fiqur</span>
-            <span class="tab-title">Həndəsə / Fiqurlu Sual</span>
-          </button>
-          <button class="type-tab" data-type="qapali" title="5 variantlı klassik test">
+          <button class="type-tab active" data-type="qapali" title="5 variantlı test">
             <span class="tab-badge">A B C D E</span>
             <span class="tab-title">Qapalı Test</span>
           </button>
@@ -98,94 +94,38 @@
           </button>
           <button class="type-tab" data-type="situasiya" title="Mətn əsaslı situasiya və alt suallar">
             <span class="tab-badge">📖 Mətn</span>
-            <span class="tab-title">Situasiya / Kontekst</span>
+            <span class="tab-title">Situasiya</span>
           </button>
         </div>
 
-        <!-- HAZIR FİQURLAR QALEREYASI (Xüsusilə Üçbucaqlar və digər fiqurlar) -->
-        <div id="shapeLibrarySection" class="shape-library-section">
-          <div class="library-header">
-            <h3>📐 Hazır Fiqurlar Kataloqu</h3>
-            <span class="library-tip">Fiquru seçin, üzərinə ölçüləri və "?" qoyun:</span>
+        <!-- FİQUR ƏLAVƏ ETMƏ / FİQURLAR PƏNCƏRƏSİ BÖLMƏSİ (İlkin olaraq bağlı, müəllim istəsə açır) -->
+        <div class="figure-control-card">
+          <!-- When no figure is attached -->
+          <div id="figureNotAttachedView" class="figure-not-attached">
+            <button type="button" class="btn btn-outline w-full btn-open-studio" id="openShapeStudioBtn">
+              <span class="btn-icon">📐</span>
+              <span>Fiqurlar Pəncərəsi (PowerPoint Üslubunda Şəkil Çək)</span>
+            </button>
+            <span class="help-hint">İstəyə bağlıdır: Şəkilsiz sadə sual hazırlamaq üçün boş buraxa bilərsiniz.</span>
           </div>
 
-          <!-- Shape Category Filter Tabs -->
-          <div class="shape-cat-filters">
-            <button class="shape-cat-btn active" data-cat="ucbucaq">Üçbucaqlar (11 növ)</button>
-            <button class="shape-cat-btn" data-cat="dordbucaq">Dördbucaqlılar (7 növ)</button>
-            <button class="shape-cat-btn" data-cat="cevre">Çevrə & Qrafik (6 növ)</button>
-          </div>
-
-          <!-- Shape Visual Cards Grid -->
-          <div class="shape-cards-grid" id="shapeCardsContainer">
-            <!-- Dynamically populated shape thumbnail cards -->
-          </div>
-
-          <!-- Selected Shape Label & Value Editor (Fiqurun üzərində rəqəmlər/hərflər) -->
-          <div class="shape-editor-box" id="shapeEditorBox">
-            <div class="shape-editor-header">
-              <span id="selectedShapeName" class="selected-shape-title">Seçilmiş: Düzbucaqlı Üçbucaq</span>
-              <button type="button" class="btn btn-xs btn-outline" id="autoQuestionTextBtn">
-                + "Şəklə əsasən..." mətni yaz
-              </button>
+          <!-- When a figure IS attached -->
+          <div id="figureAttachedView" class="figure-attached-bar hidden">
+            <div class="attached-thumb" id="attachedFigureThumb">
+              <!-- Mini SVG Thumbnail -->
             </div>
-
-            <!-- Shape Live Preview on Editor -->
-            <div class="shape-preview-frame">
-              <div id="geomSvgContainer" class="geom-svg-card">
-                <!-- SVG dynamically rendered here -->
+            <div class="attached-info">
+              <span class="attached-title" id="attachedFigureName">Həndəsi Fiqur Əlavə Edildi</span>
+              <div class="attached-actions">
+                <button type="button" class="btn btn-xs btn-outline" id="editAttachedFigureBtn">✏️ Fiquru Dəyiş</button>
+                <button type="button" class="btn btn-xs btn-ghost text-red" id="removeAttachedFigureBtn">🗑️ Fiquru Sil</button>
               </div>
-            </div>
-
-            <!-- Parametrlərin daxil edilməsi sahəsi -->
-            <div class="shape-inputs-grid">
-              <div class="shape-input-row">
-                <label for="geomLabelA">Tərəf a (Sol/Katet):</label>
-                <div class="input-with-quick">
-                  <input type="text" id="geomLabelA" class="form-control" value="6 sm" placeholder="Örn: 6 sm">
-                  <button type="button" class="quick-val-btn" onclick="setShapeInput('geomLabelA', '?')">?</button>
-                </div>
-              </div>
-
-              <div class="shape-input-row">
-                <label for="geomLabelB">Tərəf b (Sağ/Oturacaq):</label>
-                <div class="input-with-quick">
-                  <input type="text" id="geomLabelB" class="form-control" value="8 sm" placeholder="Örn: 8 sm">
-                  <button type="button" class="quick-val-btn" onclick="setShapeInput('geomLabelB', '?')">?</button>
-                </div>
-              </div>
-
-              <div class="shape-input-row">
-                <label for="geomLabelC">Tərəf c / Hipotenuz / Axtarılan:</label>
-                <div class="input-with-quick">
-                  <input type="text" id="geomLabelC" class="form-control" value="c = ?" placeholder="Örn: c = ?">
-                  <button type="button" class="quick-val-btn" onclick="setShapeInput('geomLabelC', '?')">?</button>
-                </div>
-              </div>
-
-              <div class="shape-input-row">
-                <label for="geomAngle">Bucaq (dərəcə / α):</label>
-                <div class="input-with-quick">
-                  <input type="text" id="geomAngle" class="form-control" value="90°" placeholder="Örn: 30°, α, 90°">
-                  <button type="button" class="quick-val-btn" onclick="setShapeInput('geomAngle', 'α')">α</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Quick Add Helpers -->
-            <div class="quick-symbols-bar">
-              <span class="qs-label">Tez əlavə et:</span>
-              <button type="button" class="qs-btn" onclick="appendUnitToActive('sm')">+ sm</button>
-              <button type="button" class="qs-btn" onclick="appendUnitToActive('sm²')">+ sm²</button>
-              <button type="button" class="qs-btn" onclick="appendUnitToActive('°')">+ °</button>
-              <button type="button" class="qs-btn" onclick="appendUnitToActive('√')">√</button>
-              <button type="button" class="qs-btn highlight" onclick="appendUnitToActive('?')">? (Axtarılan)</button>
             </div>
           </div>
         </div>
 
-        <!-- Math Symbol Quick Access Bar -->
-        <div class="symbol-toolbar">
+        <!-- Math Symbol Toolbar (YALNIZ Riyaziyyat və Fizika seçildikdə görünür!) -->
+        <div id="mathSymbolToolbar" class="symbol-toolbar">
           <span class="toolbar-title">Riyazi Simvollar:</span>
           <div class="symbol-buttons">
             <button type="button" class="sym-btn" data-sym="√">√</button>
@@ -240,10 +180,10 @@
           <!-- Question Prompt / Text -->
           <div class="form-group">
             <label for="questionText">Sualın Mətni / Şərti *</label>
-            <textarea id="questionText" class="form-control text-area" rows="3" placeholder="Sualın şərtini daxil edin. Yuxarıdakı riyazi simvollardan istifadə edə bilərsiniz..." required></textarea>
+            <textarea id="questionText" class="form-control text-area" rows="3" placeholder="Sualın şərtini daxil edin..." required></textarea>
           </div>
 
-          <!-- 1. Qapalı və ya Həndəsi Fiqurlu Suallar üçün Variantlar (A, B, C, D, E) -->
+          <!-- 1. Qapalı Suallar üçün Variantlar (A, B, C, D, E) -->
           <div id="optionsGroup" class="form-dynamic-block">
             <div class="block-header">
               <span>Variantlar (Doğru cavabı radio ilə işarələyin):</span>
@@ -411,7 +351,7 @@
         <div id="noQuestionsNotice" class="dim-empty-state">
           <div class="empty-icon">📝</div>
           <h3>Hələ heç bir sual əlavə olunmayıb</h3>
-          <p>Sol tərəfdəki kataloqdan istədiyiniz fiquru seçin və ya <strong>"Nümunə İmtahan"</strong> düyməsinə klikləyin.</p>
+          <p>Sol tərəfdəki paneldən sual hazırlayın və ya <strong>"Nümunə İmtahan"</strong> düyməsinə klikləyin.</p>
         </div>
 
         <!-- Optical Bubble Answer Sheet (Cavab Kartı Şablonu) -->
@@ -462,6 +402,217 @@
       </div>
     </section>
   </main>
+
+  <!-- ==========================================================================
+       FİQURLAR PƏNCƏRƏSİ - POWERPOINT ÜSLUBLU HƏNDƏSƏ STUDİYASI (MODAL)
+       ========================================================================== -->
+  <div id="shapeStudioModal" class="shape-studio-modal hidden">
+    <div class="studio-window">
+      <!-- Studio Header -->
+      <div class="studio-header">
+        <div class="studio-title-group">
+          <div class="studio-badge">📐 Fiqur Studiyası</div>
+          <div>
+            <h3>PowerPoint Üslubunda Həndəsi Şəkil Yaradıcısı</h3>
+            <p>Boş baza fiquru seçin, üzərinə xətlər, bucaqlar və ölçüləri sərbəst əlavə edin</p>
+          </div>
+        </div>
+        <button type="button" class="studio-close-x" id="closeShapeStudioBtn">&times;</button>
+      </div>
+
+      <!-- PowerPoint Ribbon (Alətlər Zolağı) -->
+      <div class="powerpoint-ribbon">
+        <!-- 1. Təmiz Baza Fiquru -->
+        <div class="ribbon-block">
+          <span class="ribbon-label">1. BAZA FİQURU</span>
+          <select id="studioBaseShapeSelect" class="ribbon-select">
+            <optgroup label="Üçbucaqlar (Uclarından Dəyişdirilən)">
+              <option value="empty_right_triangle" selected>Düzbucaqlı Üçbucaq</option>
+              <option value="empty_isosceles_triangle">Bərabəryanlı Üçbucaq</option>
+              <option value="empty_equilateral_triangle">Bərabərtərəfli Üçbucaq</option>
+              <option value="empty_scalene_triangle">İxtiyari Üçbucaq</option>
+              <option value="empty_obtuse_triangle">Korbucaqlı Üçbucaq</option>
+            </optgroup>
+            <optgroup label="Dördbucaqlılar (Uclarından Dəyişdirilən)">
+              <option value="empty_square">Kvadrat</option>
+              <option value="empty_rectangle">Düzbucaqlı</option>
+              <option value="empty_rhombus">Romb</option>
+              <option value="empty_parallelogram">Paraleloqram</option>
+              <option value="empty_trapezoid">Trapesiya</option>
+              <option value="empty_isosceles_trapezoid">Bərabəryanlı Trapesiya</option>
+              <option value="empty_right_trapezoid">Düzbucaqlı Trapesiya</option>
+            </optgroup>
+            <optgroup label="Çevrə & Qrafik">
+              <option value="empty_circle">Çevrə / Dairə</option>
+              <option value="empty_coordinate_axes">Dekart Koordinat Oxları</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- 2. Paint Alətləri (Xətt, Ox, Bucaq, Mətn) -->
+        <div class="ribbon-block">
+          <span class="ribbon-label">2. RƏSM ALƏTLƏRİ (PAİNT)</span>
+          <div class="ribbon-btn-row">
+            <button type="button" class="ribbon-tool-btn active" id="toolSelect" data-paint-tool="select" title="Təpə nöqtələrindən tutub uzadın və ya formanı dəyişin">
+              <span>🖱️ Seç / Tərpət</span>
+            </button>
+            <button type="button" class="ribbon-tool-btn" id="toolAddLine" data-paint-tool="line" title="Sərbəst xətt (çubuq) əlavə et - uclarından tutub uzadın və əyin">
+              <span>📏 Xətt (Çubuq)</span>
+            </button>
+            <button type="button" class="ribbon-tool-btn" id="toolAddRightAngle" data-paint-tool="right_angle" title="90° düz bucaq nişanı əlavə et">
+              <span>📐 90° Bucaq</span>
+            </button>
+            <button type="button" class="ribbon-tool-btn" id="toolAddArrow" data-paint-tool="arrow" title="Ox xətti əlavə et">
+              <span>🏹 Ox</span>
+            </button>
+            <button type="button" class="ribbon-tool-btn" id="toolAddText" data-paint-tool="text" title="Kətan üzərində istənilən yerə yazı və ya hərf əlavə et">
+              <span>🔤 Mətn / Yazı</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Redaktə / Silmə Əməliyyatları -->
+        <div class="ribbon-block">
+          <span class="ribbon-label">3. ƏMƏLİYYAT</span>
+          <div class="ribbon-btn-row">
+            <button type="button" class="ribbon-action-btn danger" id="studioDeleteElementBtn" title="Seçilmiş xətti və ya elementi sil">
+              <span>🗑️ Sil</span>
+            </button>
+            <button type="button" class="ribbon-action-btn" id="studioClearElementsBtn" title="Əlavə edilmiş bütün xətləri təmizlə">
+              <span>🧹 Təmizlə</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Rəng -->
+        <div class="ribbon-block">
+          <span class="ribbon-label">4. RƏNG</span>
+          <div class="ribbon-colors-row">
+            <button type="button" class="color-circle-btn active" data-color="#000000" style="background: #000000;" title="Qara (DİM)"></button>
+            <button type="button" class="color-circle-btn" data-color="#dc2626" style="background: #dc2626;" title="Qırmızı"></button>
+            <button type="button" class="color-circle-btn" data-color="#2563eb" style="background: #2563eb;" title="Göy"></button>
+            <button type="button" class="color-circle-btn" data-color="#16a34a" style="background: #16a34a;" title="Yaşıl"></button>
+            <button type="button" class="color-circle-btn" data-color="#ea580c" style="background: #ea580c;" title="Narıncı"></button>
+          </div>
+        </div>
+
+        <!-- 5. Xətt Tərzi və Qalınlığı -->
+        <div class="ribbon-block">
+          <span class="ribbon-label">5. XƏTT XÜSUSİYYƏTİ</span>
+          <div class="ribbon-selects-row">
+            <select id="studioLineStyleSelect" class="ribbon-mini-select" title="Xətt növü">
+              <option value="solid">Düz Xətt ──</option>
+              <option value="dashed">Qırıq-qırıq ┄┄</option>
+              <option value="dotted">Nöqtəli ┈</option>
+            </select>
+            <select id="studioLineWidthSelect" class="ribbon-mini-select" title="Xətt qalınlığı">
+              <option value="2">Standart (2px)</option>
+              <option value="3">Qalın (3px)</option>
+              <option value="1.5">İncə (1.5px)</option>
+              <option value="4">Çox Qalın (4px)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Work Area (Böyük Kətan + Sağ Tərəf Ölçü Xanalari) -->
+      <div class="studio-work-layout">
+        <!-- Center Canvas Area -->
+        <div class="studio-canvas-panel">
+          <div class="canvas-artboard" id="studioSvgCanvasContainer">
+            <!-- Dynamic SVG renders here -->
+          </div>
+          <div class="canvas-hint">
+            <span>💡 <strong>İstifadə qaydası:</strong> Fiqurun uclarındakı parlaq nöqtələrdən tutub formanı sərbəst dəyişin (uzadın, əyin, fırladın). Xətt əlavə edərək uclarını istədiyiniz təpəyə və ya tərəfə aparın.</span>
+          </div>
+        </div>
+
+        <!-- Right Side: Measurement & Text Labels -->
+        <div class="studio-controls-sidebar">
+          <div class="sidebar-box">
+            <h4>Ölçülər və Göstəricilər</h4>
+            <p class="sidebar-tip">İstədiyiniz xanaya ölçü yazın və ya "?" qoyun:</p>
+
+            <div class="studio-field">
+              <label for="studioInputA">Tərəf a (Sol tərəf / Katet):</label>
+              <div class="field-with-quick">
+                <input type="text" id="studioInputA" placeholder="Boş və ya məs: 6 sm">
+                <button type="button" class="quick-q-btn" onclick="setStudioInput('studioInputA', '?')">?</button>
+              </div>
+            </div>
+
+            <div class="studio-field">
+              <label for="studioInputB">Tərəf b (Sağ tərəf / Oturacaq):</label>
+              <div class="field-with-quick">
+                <input type="text" id="studioInputB" placeholder="Boş və ya məs: 8 sm">
+                <button type="button" class="quick-q-btn" onclick="setStudioInput('studioInputB', '?')">?</button>
+              </div>
+            </div>
+
+            <div class="studio-field">
+              <label for="studioInputC">Tərəf c (Hipotenuz / Oturacaq):</label>
+              <div class="field-with-quick">
+                <input type="text" id="studioInputC" placeholder="Boş və ya məs: c = ?">
+                <button type="button" class="quick-q-btn" onclick="setStudioInput('studioInputC', '?')">?</button>
+              </div>
+            </div>
+
+            <!-- Sərbəst Mətn / Yazı Qutusu (Text Bar) -->
+            <div class="studio-field text-bar-sidebar-group">
+              <label for="studioTextBarInput">Sərbəst Mətn / Yazı Qutusu (Text Bar):</label>
+              <div class="field-with-quick">
+                <input type="text" id="studioTextBarInput" placeholder="Yazı yazın (məs: h = ?, 6 sm, α)">
+                <button type="button" class="quick-add-btn" id="addTextBarBtn" title="Kətana Mətn Qutusu Əlavə Et">➕ Qoy</button>
+              </div>
+              <div class="text-bar-quick-tags">
+                <button type="button" class="sq-pill" onclick="setTextBarValue('h = ?')">h = ?</button>
+                <button type="button" class="sq-pill" onclick="setTextBarValue('m = ?')">m = ?</button>
+                <button type="button" class="sq-pill" onclick="setTextBarValue('S = ?')">S = ?</button>
+                <button type="button" class="sq-pill" onclick="setTextBarValue('P = ?')">P = ?</button>
+                <button type="button" class="sq-pill" onclick="setTextBarValue('α = ?')">α = ?</button>
+              </div>
+              <small class="field-subtext">💡 Kətandakı qutunun ortasından tutub daşıyın, 4 küncündən tutub ölçünü dəyişin.</small>
+            </div>
+
+            <div class="studio-field">
+              <label for="studioInputAngle">Bucaq (dərəcə / α):</label>
+              <div class="field-with-quick">
+                <input type="text" id="studioInputAngle" placeholder="Boş və ya məs: 30°, α">
+                <button type="button" class="quick-q-btn" onclick="setStudioInput('studioInputAngle', 'α')">α</button>
+              </div>
+            </div>
+
+            <div class="studio-field">
+              <label for="studioInputVertices">Təpə Hərfləri (A, B, C, D):</label>
+              <input type="text" id="studioInputVertices" value="A, B, C" placeholder="A, B, C və ya boş">
+            </div>
+
+            <!-- Quick Append Helpers -->
+            <div class="studio-quick-helpers">
+              <span class="sq-title">Sürətli əlavə et:</span>
+              <div class="sq-pills">
+                <button type="button" class="sq-pill" onclick="appendStudioUnit('sm')">+ sm</button>
+                <button type="button" class="sq-pill" onclick="appendStudioUnit('sm²')">+ sm²</button>
+                <button type="button" class="sq-pill" onclick="appendStudioUnit('°')">+ °</button>
+                <button type="button" class="sq-pill" onclick="appendStudioUnit('√')">√</button>
+                <button type="button" class="sq-pill target" onclick="appendStudioUnit('?')">? (Axtarılan)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Studio Modal Action Buttons -->
+          <div class="studio-bottom-actions">
+            <button type="button" class="btn btn-secondary" id="resetStudioShapeBtn">
+              Sıfırla
+            </button>
+            <button type="button" class="btn btn-primary" id="applyStudioShapeBtn">
+              ✓ Fiquru Suala Əlavə Et
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Download Modal (Testi Yükləmə Seçimləri) -->
   <div id="downloadModal" class="modal-backdrop hidden">

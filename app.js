@@ -1,6 +1,6 @@
 /**
  * DİM SualUsta - Müəllimlər üçün İmtahan və Test Hazırlayıcı
- * JavaScript Mühərriki - Fiqurlar Kataloqu və Yükləmə Sistemi
+ * JavaScript Mühərriki - PowerPoint Üslublu Fiqur Studiyası və İmtahan Sistemi
  */
 
 // Global State
@@ -11,177 +11,66 @@ let currentExam = {
   questions: []
 };
 
-let activeType = 'hendese';
+let activeType = 'qapali';
 let editingQuestionId = null;
-let currentSelectedShape = 'right_triangle';
-let lastFocusedInputId = 'geomLabelC';
+let attachedFigureData = null; // null if no figure attached
+let lastFocusedStudioInputId = 'studioInputC';
 
-// ==========================================================================
-// HAZIR FİQURLAR KATALOQU (Shapes Database)
-// ==========================================================================
-const SHAPE_CATALOG = [
-  // --- Üçbucaqlar (11 növ) ---
-  {
-    id: 'right_triangle',
-    category: 'ucbucaq',
-    name: 'Düzbucaqlı Üçbucaq',
-    defaultLabels: { a: '6 sm', b: '8 sm', c: 'c = ?', angle: '90°' }
-  },
-  {
-    id: 'right_triangle_altitude',
-    category: 'ucbucaq',
-    name: 'Düzbucaqlıda Hündürlük',
-    defaultLabels: { a: 'c₁ = 4', b: 'c₂ = 9', c: 'h = ?', angle: '90°' }
-  },
-  {
-    id: 'isosceles_triangle',
-    category: 'ucbucaq',
-    name: 'Bərabəryanlı Üçbucaq',
-    defaultLabels: { a: '10 sm', b: '10 sm', c: 'b = 12 sm', angle: 'α = ?' }
-  },
-  {
-    id: 'isosceles_altitude',
-    category: 'ucbucaq',
-    name: 'Bərabəryanlı və Hündürlük',
-    defaultLabels: { a: '13 sm', b: 'b = 10 sm', c: 'h = ?', angle: 'α' }
-  },
-  {
-    id: 'equilateral_triangle',
-    category: 'ucbucaq',
-    name: 'Bərabərtərəfli Üçbucaq',
-    defaultLabels: { a: 'a = 6', b: 'a = 6', c: 'h = ?', angle: '60°' }
-  },
-  {
-    id: 'scalene_triangle',
-    category: 'ucbucaq',
-    name: 'İxtiyari Üçbucaq',
-    defaultLabels: { a: '7 sm', b: '9 sm', c: 'x = ?', angle: '60°' }
-  },
-  {
-    id: 'triangle_inscribed_circle',
-    category: 'ucbucaq',
-    name: 'Daxilinə Çevrə Çəkilmiş',
-    defaultLabels: { a: 'a = 13', b: 'b = 14', c: 'c = 15', angle: 'r = ?' }
-  },
-  {
-    id: 'triangle_circumscribed_circle',
-    category: 'ucbucaq',
-    name: 'Xaricinə Çevrə Çəkilmiş',
-    defaultLabels: { a: 'a = 8', b: 'b = 8', c: 'R = ?', angle: '30°' }
-  },
-  {
-    id: 'triangle_midline',
-    category: 'ucbucaq',
-    name: 'Üçbucaqda Orta Xətt',
-    defaultLabels: { a: 'M', b: 'N', c: 'AC = 16', angle: 'MN = ?' }
-  },
-  {
-    id: 'obtuse_triangle',
-    category: 'ucbucaq',
-    name: 'Korbucaqlı Üçbucaq',
-    defaultLabels: { a: 'a = 5', b: 'b = 6', c: 'c = ?', angle: '120°' }
-  },
-  {
-    id: 'triangle_exterior_angle',
-    category: 'ucbucaq',
-    name: 'Üçbucağın Xarici Bucağı',
-    defaultLabels: { a: '45°', b: '70°', c: 'φ = ?', angle: 'φ' }
-  },
-
-  // --- Dördbucaqlılar (7 növ) ---
-  {
-    id: 'quad_rectangle',
-    category: 'dordbucaq',
-    name: 'Düzbucaqlı və Diaqonal',
-    defaultLabels: { a: 'a = 6', b: 'b = 8', c: 'd = ?', angle: '90°' }
-  },
-  {
-    id: 'quad_square',
-    category: 'dordbucaq',
-    name: 'Kvadrat',
-    defaultLabels: { a: 'a = 5', b: 'a = 5', c: 'd = ?', angle: '90°' }
-  },
-  {
-    id: 'quad_rhombus',
-    category: 'dordbucaq',
-    name: 'Romb və Diaqonallar',
-    defaultLabels: { a: 'd₁ = 12', b: 'd₂ = 16', c: 'a = ?', angle: 'α' }
-  },
-  {
-    id: 'quad_parallelogram',
-    category: 'dordbucaq',
-    name: 'Paraleloqram və Hündürlük',
-    defaultLabels: { a: 'a = 10', b: 'b = 6', c: 'h = ?', angle: '30°' }
-  },
-  {
-    id: 'quad_trapezoid',
-    category: 'dordbucaq',
-    name: 'Trapesiya (Hündürlüklü)',
-    defaultLabels: { a: 'a = 6', b: 'b = 14', c: 'S = ?', angle: 'h = 5' }
-  },
-  {
-    id: 'quad_isosceles_trapezoid',
-    category: 'dordbucaq',
-    name: 'Bərabəryanlı Trapesiya',
-    defaultLabels: { a: 'c = 10', b: 'b = 16', c: 'a = 4', angle: 'h = ?' }
-  },
-  {
-    id: 'quad_right_trapezoid',
-    category: 'dordbucaq',
-    name: 'Düzbucaqlı Trapesiya',
-    defaultLabels: { a: 'h = 8', b: 'b = 12', c: 'c = ?', angle: 'a = 6' }
-  },
-
-  // --- Çevrə & Qrafik (6 növ) ---
-  {
-    id: 'circle_chord',
-    category: 'cevre',
-    name: 'Çevrə və Vətər',
-    defaultLabels: { a: 'R = 10', b: 'd = 6 sm', c: 'AB = ?', angle: 'O' }
-  },
-  {
-    id: 'circle_tangents',
-    category: 'cevre',
-    name: 'İki Toxunan Xətt',
-    defaultLabels: { a: 'R = 5', b: 'P', c: 'PT = ?', angle: '60°' }
-  },
-  {
-    id: 'circle_central_inscribed',
-    category: 'cevre',
-    name: 'Mərkəzi və Daxilə Bucaq',
-    defaultLabels: { a: 'α = ?', b: 'β = 80°', c: 'O', angle: 'O' }
-  },
-  {
-    id: 'circle_intersecting_chords',
-    category: 'cevre',
-    name: 'Kəsişən Vətərlər',
-    defaultLabels: { a: '3', b: '6', c: 'x = ?', angle: '4' }
-  },
-  {
-    id: 'coordinate_parabola',
-    category: 'cevre',
-    name: 'Parabola Qrafiki',
-    defaultLabels: { a: 'x₁ = -2', b: 'x₂ = 4', c: 'y = f(x)', angle: 'y' }
-  },
-  {
-    id: 'coordinate_linear',
-    category: 'cevre',
-    name: 'Düz Xətt Qrafiki',
-    defaultLabels: { a: 'A(0; 3)', b: 'B(4; 0)', c: 'k = ?', angle: 'y' }
+// Studio Internal State (Paint & Geometric Drawing Engine State)
+let studioState = {
+  baseShape: 'empty_right_triangle',
+  color: '#000000',
+  lineStyle: 'solid',
+  lineWidth: '2',
+  activeTool: 'select', // 'select' | 'line' | 'right_angle' | 'arrow' | 'text'
+  selectedElementId: null,
+  selectedElementType: null,
+  vertices: [
+    { x: 80, y: 220, label: 'A' },
+    { x: 380, y: 220, label: 'C' },
+    { x: 80, y: 50, label: 'B' }
+  ],
+  circle: null,
+  axes: false,
+  lines: [], // custom lines: [{id, x1, y1, x2, y2, color, style, width, isArrow}]
+  rightAngles: [{ id: 'ra_default', x: 80, y: 220, size: 18 }],
+  texts: [], // custom texts: [{id, text, x, y, color, fontSize}]
+  labels: {
+    a: '',
+    b: '',
+    c: '',
+    h: '',
+    angle: '',
+    vertices: 'A, B, C'
   }
-];
+};
 
-// Built-in authentic DİM Sample Questions
+// Built-in authentic DİM Sample Questions (Both with and without figures!)
 const DIM_SAMPLE_QUESTIONS = [
   {
     id: 'dim_1',
-    type: 'hendese',
+    type: 'qapali',
     subject: 'Riyaziyyat',
     points: 2,
     difficulty: 'Orta',
-    text: 'Şəkildə verilmiş düzbucaqlı üçbucaqda katetlər a = 6 sm və b = 8 sm olarsa, hipotenuzun (c) uzunluğunu tapın.',
-    svgShape: 'right_triangle',
-    shapeLabels: { a: '6 sm', b: '8 sm', c: 'c = ?', angle: '90°' },
+    text: 'Şəkildə verilmiş düzbucaqlı üçbucaqda katetlər 6 sm və 8 sm olarsa, hipotenuzun (c) uzunluğunu tapın.',
+    figure: {
+      baseShape: 'empty_right_triangle',
+      color: '#000000',
+      lineStyle: 'solid',
+      lineWidth: '2',
+      vertices: [
+        { x: 80, y: 220, label: 'A' },
+        { x: 380, y: 220, label: 'C' },
+        { x: 80, y: 50, label: 'B' }
+      ],
+      circle: null,
+      axes: false,
+      rightAngles: [{ id: 'ra_default', x: 80, y: 220, size: 18 }],
+      lines: [],
+      texts: [],
+      labels: { a: '6 sm', b: '8 sm', c: 'c = ?', h: '', angle: '', vertices: 'A, B, C' }
+    },
     options: {
       A: '9 sm',
       B: '10 sm',
@@ -198,6 +87,7 @@ const DIM_SAMPLE_QUESTIONS = [
     points: 1,
     difficulty: 'Asan',
     text: 'x² - 7x + 12 = 0 kvadrat tənliyinin köklərinin cəmini tapın.',
+    figure: null, // Şəkilsiz sadə cəbr sualı!
     options: {
       A: '-7',
       B: '12',
@@ -209,13 +99,31 @@ const DIM_SAMPLE_QUESTIONS = [
   },
   {
     id: 'dim_3',
-    type: 'hendese',
+    type: 'qapali',
     subject: 'Riyaziyyat',
     points: 2,
     difficulty: 'Orta',
     text: 'Radiusu R = 10 sm olan çevrədə mərkəzdən 6 sm məsafədə yerləşən AB vətərinin uzunluğunu tapın.',
-    svgShape: 'circle_chord',
-    shapeLabels: { a: 'R = 10', b: 'd = 6 sm', c: 'AB = ?', angle: 'O' },
+    figure: {
+      baseShape: 'empty_circle',
+      color: '#000000',
+      lineStyle: 'solid',
+      lineWidth: '2',
+      circle: { cx: 230, cy: 135, r: 85 },
+      vertices: [],
+      axes: false,
+      lines: [
+        { id: 'chord_1', x1: 155, y1: 195, x2: 305, y2: 195, color: '#dc2626', style: 'solid', width: '2', isArrow: false },
+        { id: 'dist_1', x1: 230, y1: 135, x2: 230, y2: 195, color: '#dc2626', style: 'dashed', width: '1.5', isArrow: false }
+      ],
+      texts: [
+        { id: 't1', text: 'd = 6 sm', x: 238, y: 170, color: '#dc2626', fontSize: 13 },
+        { id: 't2', text: 'AB = ?', x: 215, y: 215, color: '#dc2626', fontSize: 13 },
+        { id: 't3', text: 'R = 10', x: 275, y: 120, color: '#000000', fontSize: 13 }
+      ],
+      rightAngles: [],
+      labels: { a: '', b: '', c: '', h: '', angle: '', vertices: 'A, B' }
+    },
     options: {
       A: '12 sm',
       B: '14 sm',
@@ -232,6 +140,7 @@ const DIM_SAMPLE_QUESTIONS = [
     points: 2,
     difficulty: 'Orta',
     text: '(an) ədədi silsiləsində birinci hədd a₁ = 3 və silsilə fərqi d = 4 olarsa, silsilənin ilk 10 həddinin cəmini (S₁₀) hesablayın.',
+    figure: null,
     correctAnswer: '210'
   },
   {
@@ -241,6 +150,7 @@ const DIM_SAMPLE_QUESTIONS = [
     points: 3,
     difficulty: 'Çətin',
     text: 'Verilmiş funksiyalar və onların qrafiklərinə aid xassələr arasında uyğunluğu müəyyən edin.',
+    figure: null,
     matching: {
       left: ['1. y = 2x - 4', '2. y = x² - 9', '3. y = 6 / x'],
       right: [
@@ -274,412 +184,486 @@ function saveStorage() {
 }
 
 // ==========================================================================
-// SVG GEOMETRY ENGINE (Bütün fiqurlar üçün dəqiq vektor qrafikləri)
+// 1. RİYAZİ SİMVOLLARIN GÖRÜNMƏSİ (Yalnız Riyaziyyat və Fizikada)
 // ==========================================================================
-function generateGeometrySvg(shape, labels, isThumb = false) {
-  const lA = escapeHtml(labels.a || '');
-  const lB = escapeHtml(labels.b || '');
-  const lC = escapeHtml(labels.c || '');
-  const lAng = escapeHtml(labels.angle || '');
-
-  const strokeW = isThumb ? '1.8' : '2.2';
-  const fontSize = isThumb ? '9' : '13';
-  const width = isThumb ? 110 : 220;
-  const height = isThumb ? 75 : 155;
-  const viewBox = `0 0 220 155`;
-
-  switch (shape) {
-    // 1. Düzbucaqlı üçbucaq
-    case 'right_triangle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="35,130 185,130 35,25" fill="none" stroke="#000000" stroke-width="${strokeW}" stroke-linejoin="round"/>
-          <polyline points="35,112 53,112 53,130" fill="none" stroke="#000000" stroke-width="1.6"/>
-          <circle cx="44" cy="121" r="1.5" fill="#000000"/>
-          ${lAng ? `<path d="M 160,130 A 25,25 0 0,0 170,118" fill="none" stroke="#000000" stroke-width="1.3"/><text x="145" y="122" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-style="italic">${lAng}</text>` : ''}
-          <text x="14" y="82" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="600">${lA}</text>
-          <text x="100" y="147" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="600">${lB}</text>
-          <text x="118" y="65" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="18" y="140" font-family="sans-serif" font-size="11" font-weight="700">A</text>
-          <text x="190" y="140" font-family="sans-serif" font-size="11" font-weight="700">C</text>
-          <text x="22" y="20" font-family="sans-serif" font-size="11" font-weight="700">B</text>
-        </svg>
-      `;
-
-    // 2. Düzbucaqlı üçbucaqda hipotenuza çəkilmiş hündürlük
-    case 'right_triangle_altitude':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="30,130 190,130 30,25" fill="none" stroke="#000000" stroke-width="${strokeW}" stroke-linejoin="round"/>
-          <polyline points="30,114 46,114 46,130" fill="none" stroke="#000000" stroke-width="1.5"/>
-          <!-- Altitude to hypotenuse -->
-          <line x1="30" y1="25" x2="110" y2="130" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,2"/>
-          <polyline points="103,121 110,115 117,124" fill="none" stroke="#000000" stroke-width="1.3"/>
-          <text x="60" y="70" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="65" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="145" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="115" y="146" font-family="sans-serif" font-size="11" font-weight="700">H</text>
-        </svg>
-      `;
-
-    // 3. Bərabəryanlı üçbucaq
-    case 'isosceles_triangle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="110,22 35,130 185,130" fill="none" stroke="#000000" stroke-width="${strokeW}" stroke-linejoin="round"/>
-          <!-- Ticks on equal sides -->
-          <line x1="68" y1="75" x2="76" y2="79" stroke="#000000" stroke-width="2"/>
-          <line x1="144" y1="75" x2="152" y2="79" stroke="#000000" stroke-width="2"/>
-          <text x="40" y="72" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="600">${lA}</text>
-          <text x="160" y="72" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="600">${lB}</text>
-          <text x="95" y="147" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="105" y="15" font-family="sans-serif" font-size="11" font-weight="700">B</text>
-        </svg>
-      `;
-
-    // 4. Bərabəryanlı üçbucaqda hündürlük
-    case 'isosceles_altitude':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="110,22 35,130 185,130" fill="none" stroke="#000000" stroke-width="${strokeW}" stroke-linejoin="round"/>
-          <line x1="110" y1="22" x2="110" y2="130" stroke="#000000" stroke-width="1.6" stroke-dasharray="4,3"/>
-          <polyline points="110,118 122,118 122,130" fill="none" stroke="#000000" stroke-width="1.3"/>
-          <text x="42" y="75" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="600">${lA}</text>
-          <text x="115" y="78" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="95" y="147" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="600">${lB}</text>
-        </svg>
-      `;
-
-    // 5. Bərabərtərəfli üçbucaq
-    case 'equilateral_triangle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="110,20 40,130 180,130" fill="none" stroke="#000000" stroke-width="${strokeW}" stroke-linejoin="round"/>
-          <line x1="72" y1="72" x2="78" y2="76" stroke="#000000" stroke-width="1.8"/>
-          <line x1="142" y1="72" x2="148" y2="76" stroke="#000000" stroke-width="1.8"/>
-          <line x1="107" y1="127" x2="113" y2="133" stroke="#000000" stroke-width="1.8"/>
-          <text x="45" y="70" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="155" y="70" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="95" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="50" y="125" font-family="'STIX Two Text', serif" font-size="${fontSize}">60°</text>
-        </svg>
-      `;
-
-    // 6. Müxtəliftərəfli (İxtiyari) üçbucaq
-    case 'scalene_triangle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="80,25 25,130 195,130" fill="none" stroke="#000000" stroke-width="${strokeW}" stroke-linejoin="round"/>
-          <text x="35" y="75" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="145" y="75" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="100" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="75" y="42" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lAng}</text>
-        </svg>
-      `;
-
-    // 7. Daxilinə çevrə çəkilmiş üçbucaq
-    case 'triangle_inscribed_circle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="110,22 30,130 190,130" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <circle cx="110" cy="94" r="36" fill="none" stroke="#b91c1c" stroke-width="1.8"/>
-          <circle cx="110" cy="94" r="2.5" fill="#b91c1c"/>
-          <line x1="110" y1="94" x2="110" y2="130" stroke="#b91c1c" stroke-width="1.4" stroke-dasharray="3,2"/>
-          <text x="115" y="115" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lAng || 'r'}</text>
-          <text x="95" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lC}</text>
-        </svg>
-      `;
-
-    // 8. Xaricinə çevrə çəkilmiş üçbucaq
-    case 'triangle_circumscribed_circle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="110" cy="80" r="58" fill="none" stroke="#000000" stroke-width="1.8"/>
-          <polygon points="110,22 55,105 165,105" fill="none" stroke="#b91c1c" stroke-width="${strokeW}"/>
-          <circle cx="110" cy="80" r="2.5" fill="#000000"/>
-          <line x1="110" y1="80" x2="165" y2="105" stroke="#000000" stroke-width="1.4" stroke-dasharray="3,2"/>
-          <text x="135" y="88" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lC || 'R'}</text>
-        </svg>
-      `;
-
-    // 9. Üçbucaqda orta xətt
-    case 'triangle_midline':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="110,22 30,130 190,130" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="70" y1="76" x2="150" y2="76" stroke="#b91c1c" stroke-width="2.2"/>
-          <text x="95" y="68" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lAng || 'MN'}</text>
-          <text x="95" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lC}</text>
-        </svg>
-      `;
-
-    // 10. Korbucaqlı üçbucaq
-    case 'obtuse_triangle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="140,40 50,125 190,125" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <text x="75" y="80" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="110" y="142" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lC}</text>
-          <text x="85" y="118" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lAng}</text>
-        </svg>
-      `;
-
-    // 11. Üçbucağın xarici bucağı
-    case 'triangle_exterior_angle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="100,30 30,125 150,125" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="150" y1="125" x2="205" y2="125" stroke="#000000" stroke-width="1.8" stroke-dasharray="3,2"/>
-          <path d="M 170,125 A 20,20 0 0,0 162,112" fill="none" stroke="#b91c1c" stroke-width="1.8"/>
-          <text x="172" y="115" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lAng || 'φ'}</text>
-          <text x="50" y="118" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="90" y="48" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-        </svg>
-      `;
-
-    // --- Dördbucaqlılar ---
-    case 'quad_rectangle':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <rect x="35" y="35" width="150" height="90" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="35" y1="125" x2="185" y2="35" stroke="#b91c1c" stroke-width="1.8" stroke-dasharray="4,2"/>
-          <text x="15" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="100" y="142" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="110" y="75" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-        </svg>
-      `;
-
-    case 'quad_square':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <rect x="55" y="30" width="100" height="100" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="55" y1="130" x2="155" y2="30" stroke="#b91c1c" stroke-width="1.8" stroke-dasharray="4,2"/>
-          <text x="35" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="95" y="145" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="110" y="75" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-        </svg>
-      `;
-
-    case 'quad_rhombus':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="110,25 180,80 110,135 40,80" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="110" y1="25" x2="110" y2="135" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="3,2"/>
-          <line x1="40" y1="80" x2="180" y2="80" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="3,2"/>
-          <text x="60" y="50" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lC || 'a'}</text>
-          <text x="115" y="60" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lA}</text>
-          <text x="145" y="95" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lB}</text>
-        </svg>
-      `;
-
-    case 'quad_parallelogram':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="65,35 185,35 155,130 35,130" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="65" y1="35" x2="65" y2="130" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="4,2"/>
-          <text x="50" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lC || 'h'}</text>
-          <text x="100" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="175" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-        </svg>
-      `;
-
-    case 'quad_trapezoid':
-    case 'trapezoid':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="65,35 155,35 195,130 25,130" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="65" y1="35" x2="65" y2="130" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="4,2"/>
-          <text x="100" y="28" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="100" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="48" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lAng || 'h'}</text>
-          <text x="135" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-        </svg>
-      `;
-
-    case 'quad_isosceles_trapezoid':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="65,35 155,35 190,130 30,130" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="45" y1="80" x2="52" y2="84" stroke="#000000" stroke-width="2"/>
-          <line x1="168" y1="80" x2="175" y2="84" stroke="#000000" stroke-width="2"/>
-          <text x="100" y="28" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lC || 'a'}</text>
-          <text x="100" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="32" y="80" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-        </svg>
-      `;
-
-    case 'quad_right_trapezoid':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="40,35 150,35 185,130 40,130" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <polyline points="40,114 56,114 56,130" fill="none" stroke="#000000" stroke-width="1.5"/>
-          <text x="20" y="85" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA || 'h'}</text>
-          <text x="90" y="28" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lAng || 'a'}</text>
-          <text x="100" y="146" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="172" y="80" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-        </svg>
-      `;
-
-    // --- Çevrə & Qrafik ---
-    case 'circle_chord':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="110" cy="80" r="58" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <circle cx="110" cy="80" r="3" fill="#000000"/>
-          <text x="115" y="76" font-family="sans-serif" font-size="11" font-weight="700">O</text>
-          <line x1="65" y1="122" x2="155" y2="122" stroke="#000000" stroke-width="2.2"/>
-          <line x1="110" y1="80" x2="110" y2="122" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="3,2"/>
-          <line x1="110" y1="80" x2="155" y2="122" stroke="#000000" stroke-width="1.3" stroke-dasharray="4,2"/>
-          <text x="135" y="98" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="85" y="105" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lB}</text>
-          <text x="100" y="140" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-        </svg>
-      `;
-
-    case 'circle_tangents':
-    case 'circle_tangent':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="85" cy="80" r="45" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <circle cx="85" cy="80" r="2.5" fill="#000000"/>
-          <line x1="185" y1="80" x2="85" y2="35" stroke="#000000" stroke-width="1.8"/>
-          <line x1="185" y1="80" x2="85" y2="125" stroke="#000000" stroke-width="1.8"/>
-          <circle cx="185" cy="80" r="3" fill="#000000"/>
-          <text x="190" y="85" font-family="sans-serif" font-size="11" font-weight="700">P</text>
-          <text x="130" y="50" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC}</text>
-          <text x="65" y="80" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-        </svg>
-      `;
-
-    case 'circle_central_inscribed':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="110" cy="80" r="55" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <circle cx="110" cy="80" r="3" fill="#000000"/>
-          <line x1="65" y1="115" x2="110" y2="80" stroke="#000000" stroke-width="1.5"/>
-          <line x1="155" y1="115" x2="110" y2="80" stroke="#000000" stroke-width="1.5"/>
-          <line x1="65" y1="115" x2="110" y2="25" stroke="#b91c1c" stroke-width="1.5"/>
-          <line x1="155" y1="115" x2="110" y2="25" stroke="#b91c1c" stroke-width="1.5"/>
-          <text x="102" y="45" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lA}</text>
-          <text x="102" y="98" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-        </svg>
-      `;
-
-    case 'circle_intersecting_chords':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="110" cy="80" r="55" fill="none" stroke="#000000" stroke-width="${strokeW}"/>
-          <line x1="60" y1="60" x2="160" y2="105" stroke="#000000" stroke-width="2"/>
-          <line x1="75" y1="120" x2="145" y2="40" stroke="#b91c1c" stroke-width="2"/>
-          <text x="80" y="65" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lA}</text>
-          <text x="140" y="105" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lB}</text>
-          <text x="100" y="55" font-family="'STIX Two Text', serif" font-size="${fontSize}" fill="#b91c1c">${lC}</text>
-        </svg>
-      `;
-
-    case 'coordinate_parabola':
-    case 'coordinate_axes':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <line x1="20" y1="95" x2="200" y2="95" stroke="#000000" stroke-width="1.6"/>
-          <polyline points="194,91 200,95 194,99" fill="#000000"/>
-          <line x1="110" y1="145" x2="110" y2="15" stroke="#000000" stroke-width="1.6"/>
-          <polyline points="106,21 110,15 114,21" fill="#000000"/>
-          <text x="195" y="112" font-family="sans-serif" font-size="11" font-weight="700">x</text>
-          <text x="96" y="22" font-family="sans-serif" font-size="11" font-weight="700">y</text>
-          <path d="M 50,25 Q 110,145 170,25" fill="none" stroke="#b91c1c" stroke-width="2.2"/>
-          <text x="145" y="55" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC || 'y=f(x)'}</text>
-        </svg>
-      `;
-
-    case 'coordinate_linear':
-      return `
-        <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">
-          <line x1="20" y1="95" x2="200" y2="95" stroke="#000000" stroke-width="1.6"/>
-          <polyline points="194,91 200,95 194,99" fill="#000000"/>
-          <line x1="110" y1="145" x2="110" y2="15" stroke="#000000" stroke-width="1.6"/>
-          <polyline points="106,21 110,15 114,21" fill="#000000"/>
-          <line x1="45" y1="135" x2="175" y2="35" stroke="#b91c1c" stroke-width="2.2"/>
-          <text x="150" y="55" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#b91c1c">${lC || 'y=kx+b'}</text>
-        </svg>
-      `;
-
-    default:
-      return generateGeometrySvg('right_triangle', labels, isThumb);
+function updateMathToolbarVisibility() {
+  const subj = currentExam.subject || 'Riyaziyyat';
+  const isMathOrPhysics = (subj === 'Riyaziyyat' || subj === 'Fizika');
+  const toolbar = document.getElementById('mathSymbolToolbar');
+  if (toolbar) {
+    if (isMathOrPhysics) {
+      toolbar.classList.remove('hidden');
+    } else {
+      toolbar.classList.add('hidden');
+    }
   }
 }
 
-// Render the Visual Shape Cards Gallery
-function renderShapeCards(activeCategory = 'ucbucaq') {
-  const container = document.getElementById('shapeCardsContainer');
-  if (!container) return;
+// ==========================================================================
+// 2. PAİNT ÜSLUBLU HƏNDƏSƏ STUDİYASI (İnteraktiv Vektor Rəsm Mühərriki)
+// ==========================================================================
 
-  const filtered = SHAPE_CATALOG.filter(s => s.category === activeCategory);
-
-  container.innerHTML = filtered.map(shape => {
-    const isSelected = shape.id === currentSelectedShape;
-    const miniSvg = generateGeometrySvg(shape.id, shape.defaultLabels, true);
-
-    return `
-      <div class="shape-thumb-card ${isSelected ? 'active' : ''}" data-shape-id="${shape.id}" onclick="selectShape('${shape.id}')">
-        <div class="shape-thumb-svg">${miniSvg}</div>
-        <span class="shape-thumb-title">${shape.name}</span>
-      </div>
-    `;
-  }).join('');
+// Baza Fiqurlar üçün Standart Koordinat Təyinatları (460x280 SVG kətanında)
+function getShapeDefaults(shapeType) {
+  switch (shapeType) {
+    case 'empty_right_triangle':
+      return {
+        vertices: [
+          { x: 80, y: 220, label: 'A' },
+          { x: 380, y: 220, label: 'C' },
+          { x: 80, y: 55, label: 'B' }
+        ],
+        rightAngles: [{ id: 'ra_default', x: 80, y: 220, size: 20 }]
+      };
+    case 'empty_isosceles_triangle':
+      return {
+        vertices: [
+          { x: 80, y: 220, label: 'A' },
+          { x: 380, y: 220, label: 'C' },
+          { x: 230, y: 55, label: 'B' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_equilateral_triangle':
+      return {
+        vertices: [
+          { x: 90, y: 220, label: 'A' },
+          { x: 370, y: 220, label: 'B' },
+          { x: 230, y: 55, label: 'C' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_scalene_triangle':
+      return {
+        vertices: [
+          { x: 60, y: 220, label: 'A' },
+          { x: 390, y: 220, label: 'B' },
+          { x: 170, y: 60, label: 'C' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_obtuse_triangle':
+      return {
+        vertices: [
+          { x: 160, y: 220, label: 'A' },
+          { x: 400, y: 220, label: 'B' },
+          { x: 60, y: 90, label: 'C' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_square':
+      return {
+        vertices: [
+          { x: 140, y: 50, label: 'B' },
+          { x: 320, y: 50, label: 'C' },
+          { x: 320, y: 230, label: 'D' },
+          { x: 140, y: 230, label: 'A' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_rectangle':
+      return {
+        vertices: [
+          { x: 80, y: 65, label: 'B' },
+          { x: 380, y: 65, label: 'C' },
+          { x: 380, y: 215, label: 'D' },
+          { x: 80, y: 215, label: 'A' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_rhombus':
+      return {
+        vertices: [
+          { x: 230, y: 40, label: 'B' },
+          { x: 380, y: 140, label: 'C' },
+          { x: 230, y: 240, label: 'D' },
+          { x: 80, y: 140, label: 'A' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_parallelogram':
+      return {
+        vertices: [
+          { x: 140, y: 60, label: 'B' },
+          { x: 390, y: 60, label: 'C' },
+          { x: 320, y: 220, label: 'D' },
+          { x: 70, y: 220, label: 'A' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_trapezoid':
+    case 'empty_isosceles_trapezoid':
+      return {
+        vertices: [
+          { x: 140, y: 60, label: 'B' },
+          { x: 320, y: 60, label: 'C' },
+          { x: 390, y: 220, label: 'D' },
+          { x: 70, y: 220, label: 'A' }
+        ],
+        rightAngles: []
+      };
+    case 'empty_right_trapezoid':
+      return {
+        vertices: [
+          { x: 90, y: 60, label: 'B' },
+          { x: 330, y: 60, label: 'C' },
+          { x: 390, y: 220, label: 'D' },
+          { x: 90, y: 220, label: 'A' }
+        ],
+        rightAngles: [{ id: 'ra_trapezoid', x: 90, y: 220, size: 20 }]
+      };
+    case 'empty_circle':
+      return {
+        circle: { cx: 230, cy: 135, r: 85 },
+        vertices: [],
+        rightAngles: []
+      };
+    case 'empty_coordinate_axes':
+      return {
+        axes: true,
+        vertices: [],
+        rightAngles: []
+      };
+    default:
+      return getShapeDefaults('empty_right_triangle');
+  }
 }
 
-// Select a shape from the gallery
-window.selectShape = function(shapeId) {
-  const shape = SHAPE_CATALOG.find(s => s.id === shapeId);
-  if (!shape) return;
+// Baza fiquru təyin et və ya sıfırla
+function initStudioShape(shapeType, preserveCustom = false) {
+  studioState.baseShape = shapeType;
+  const def = getShapeDefaults(shapeType);
+  studioState.vertices = JSON.parse(JSON.stringify(def.vertices || []));
+  studioState.circle = def.circle ? { ...def.circle } : null;
+  studioState.axes = !!def.axes;
 
-  currentSelectedShape = shapeId;
+  if (!preserveCustom) {
+    studioState.lines = [];
+    studioState.rightAngles = JSON.parse(JSON.stringify(def.rightAngles || []));
+    studioState.texts = [];
+    studioState.selectedElementId = null;
+    studioState.selectedElementType = null;
+  }
+}
 
-  // Set Question Type to Hendese
-  setQuestionType('hendese');
+// SVG Rəsm Mühərriki: Həm kətan redaktoru, həm DİM imtahan vərəqi üçün
+function renderStudioSvg(state, isMini = false, isEditor = false) {
+  if (!state) return '';
 
-  // Update title
-  const titleEl = document.getElementById('selectedShapeName');
-  if (titleEl) titleEl.textContent = `Seçilmiş: ${shape.name}`;
+  // Geriye uyğunluq: Əgər köhnə saxlanmış fiqurdursa və təpə koordinatları yoxdursa:
+  if ((!state.vertices || state.vertices.length === 0) && !state.circle && !state.axes) {
+    const def = getShapeDefaults(state.baseShape || 'empty_right_triangle');
+    state.vertices = JSON.parse(JSON.stringify(def.vertices || []));
+    if (def.circle) state.circle = { ...def.circle };
+    if (def.rightAngles && (!state.rightAngles || state.rightAngles.length === 0)) {
+      state.rightAngles = JSON.parse(JSON.stringify(def.rightAngles));
+    }
+  }
 
-  // Fill default inputs
-  const lA = document.getElementById('geomLabelA');
-  const lB = document.getElementById('geomLabelB');
-  const lC = document.getElementById('geomLabelC');
-  const lAng = document.getElementById('geomAngle');
+  const color = state.color || '#000000';
+  const strokeW = isMini ? '1.8' : (state.lineWidth || '2');
+  const dashArray = state.lineStyle === 'dashed' ? '5,4' : (state.lineStyle === 'dotted' ? '2,4' : 'none');
+  const fontSize = isMini ? '9' : '13';
+  const width = isMini ? 70 : (isEditor ? '100%' : 360);
+  const height = isMini ? 50 : (isEditor ? '100%' : 220);
+  const viewBox = `0 0 460 280`;
 
-  if (lA) lA.value = shape.defaultLabels.a || '';
-  if (lB) lB.value = shape.defaultLabels.b || '';
-  if (lC) lC.value = shape.defaultLabels.c || '';
-  if (lAng) lAng.value = shape.defaultLabels.angle || '';
+  const lA = escapeHtml(state.labels?.a || '');
+  const lB = escapeHtml(state.labels?.b || '');
+  const lC = escapeHtml(state.labels?.c || '');
+  const lH = escapeHtml(state.labels?.h || '');
+  const lAng = escapeHtml(state.labels?.angle || '');
+  const vertsInput = (state.labels?.vertices || '').split(',').map(v => v.trim());
 
-  // Update active card styling
-  document.querySelectorAll('.shape-thumb-card').forEach(c => {
-    if (c.getAttribute('data-shape-id') === shapeId) {
-      c.classList.add('active');
-    } else {
-      c.classList.remove('active');
+  // 1. Defs: Kətan toru və ox başlıqları
+  let defsMarkup = '';
+  if (isEditor) {
+    defsMarkup = `
+      <defs>
+        <pattern id="studioGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e2e8f0" stroke-width="0.8"/>
+          <circle cx="20" cy="20" r="0.8" fill="#cbd5e1"/>
+        </pattern>
+        <marker id="arrowHead" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <polygon points="0 0, 8 3.5, 0 7" fill="${color}"/>
+        </marker>
+        <marker id="arrowHeadRed" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <polygon points="0 0, 8 3.5, 0 7" fill="#dc2626"/>
+        </marker>
+        <marker id="arrowHeadBlue" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <polygon points="0 0, 8 3.5, 0 7" fill="#2563eb"/>
+        </marker>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#studioGrid)"/>
+    `;
+  } else {
+    defsMarkup = `
+      <defs>
+        <marker id="arrowHead" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <polygon points="0 0, 8 3.5, 0 7" fill="${color}"/>
+        </marker>
+      </defs>
+    `;
+  }
+
+  // 2. Baza Fiquru (Çoxbucaqlı / Çevrə / Oxlar)
+  let baseShapeMarkup = '';
+  if (state.circle) {
+    const c = state.circle;
+    baseShapeMarkup = `
+      <circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="${color}" stroke-width="${strokeW}" stroke-dasharray="${dashArray}"/>
+      <circle cx="${c.cx}" cy="${c.cy}" r="3" fill="${color}"/>
+      <text x="${c.cx + 7}" y="${c.cy - 7}" font-family="sans-serif" font-size="12" font-weight="700" fill="${color}">O</text>
+    `;
+    if (isEditor) {
+      baseShapeMarkup += `
+        <circle cx="${c.cx}" cy="${c.cy}" r="7" class="canvas-handle vertex-handle" data-drag-type="circle-center" title="Mərkəz O: Tutub çevrənin yerini dəyişin"/>
+        <circle cx="${c.cx + c.r}" cy="${c.cy}" r="7" class="canvas-handle line-handle" data-drag-type="circle-radius" title="Radius: Tutub çevrəni böyüdün və ya kiçildin"/>
+      `;
+    }
+  } else if (state.axes) {
+    baseShapeMarkup = `
+      <line x1="40" y1="140" x2="420" y2="140" stroke="${color}" stroke-width="1.8"/>
+      <polygon points="415,136 422,140 415,144" fill="${color}"/>
+      <line x1="230" y1="260" x2="230" y2="20" stroke="${color}" stroke-width="1.8"/>
+      <polygon points="226,25 230,18 234,25" fill="${color}"/>
+      <text x="415" y="158" font-family="sans-serif" font-size="12" font-weight="700">x</text>
+      <text x="215" y="25" font-family="sans-serif" font-size="12" font-weight="700">y</text>
+      <text x="218" y="154" font-family="sans-serif" font-size="11">0</text>
+    `;
+  } else if (state.vertices && state.vertices.length > 0) {
+    const pts = state.vertices.map(v => `${Math.round(v.x)},${Math.round(v.y)}`).join(' ');
+    baseShapeMarkup = `
+      <polygon points="${pts}" fill="none" stroke="${color}" stroke-width="${strokeW}" stroke-dasharray="${dashArray}" stroke-linejoin="round"/>
+    `;
+  }
+
+  // 3. Əlavə Xətlər (Müəllimin çəkdiyi çubuqlar, hündürlüklər, medianlar)
+  let linesMarkup = '';
+  (state.lines || []).forEach(l => {
+    const lColor = l.color || '#dc2626';
+    const lWidth = isMini ? '1.5' : (l.width || '2');
+    const lDash = l.style === 'dashed' ? '5,4' : (l.style === 'dotted' ? '2,4' : 'none');
+    const isSelected = (isEditor && studioState.selectedElementId === l.id);
+    let markerAttr = '';
+    if (l.isArrow) {
+      markerAttr = lColor === '#dc2626' ? 'marker-end="url(#arrowHeadRed)"' : (lColor === '#2563eb' ? 'marker-end="url(#arrowHeadBlue)"' : 'marker-end="url(#arrowHead)"');
+    }
+
+    linesMarkup += `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${lColor}" stroke-width="${lWidth}" stroke-dasharray="${lDash}" stroke-linecap="round" ${markerAttr}/>`;
+
+    if (isEditor) {
+      // Qalın toxunma zonası (rahat tutmaq üçün) və uclardakı tutacaqlar
+      linesMarkup += `
+        <line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${isSelected ? 'rgba(37,99,235,0.25)' : 'transparent'}" stroke-width="${isSelected ? 12 : 9}" class="canvas-line-interactive" data-drag-type="line-body" data-drag-id="${l.id}" title="Xətti tutub bütöv hərəkət etdirin"/>
+        <circle cx="${l.x1}" cy="${l.y1}" r="${isSelected ? 7.5 : 6}" class="canvas-handle line-handle" data-drag-type="line-p1" data-drag-id="${l.id}" title="Başlanğıc: Dartıb uzadın və əyin"/>
+        <circle cx="${l.x2}" cy="${l.y2}" r="${isSelected ? 7.5 : 6}" class="canvas-handle line-handle" data-drag-type="line-p2" data-drag-id="${l.id}" title="Son: Dartıb uzadın və əyin"/>
+      `;
     }
   });
 
-  // Update SVG
-  updateLiveGeometryPreview();
-};
+  // 4. Düz Bucaq Nişanları (90°)
+  let rightAnglesMarkup = '';
+  (state.rightAngles || []).forEach(ra => {
+    const sz = ra.size || 20;
+    const isSelected = (isEditor && studioState.selectedElementId === ra.id);
+    rightAnglesMarkup += `
+      <polyline points="${ra.x},${ra.y - sz} ${ra.x + sz},${ra.y - sz} ${ra.x + sz},${ra.y}" fill="none" stroke="${color}" stroke-width="1.6"/>
+      <circle cx="${ra.x + sz/2}" cy="${ra.y - sz/2}" r="1.5" fill="${color}"/>
+    `;
+    if (isEditor) {
+      rightAnglesMarkup += `
+        <circle cx="${ra.x + sz/2}" cy="${ra.y - sz/2}" r="${isSelected ? 8 : 6}" class="canvas-handle line-handle" data-drag-type="right-angle" data-drag-id="${ra.id}" title="90° bucaq: Təpəyə aparın"/>
+      `;
+    }
+  });
 
-// Set quick input value like '?'
-window.setShapeInput = function(inputId, val) {
+  // 5. Müəllimin Əlavə Etdiyi Sərbəst Yazılar / Text Bar
+  let textsMarkup = '';
+  (state.texts || []).forEach(t => {
+    const isSelected = (isEditor && (studioState.selectedElementId === t.id || state.texts.length === 1));
+    const tColor = t.color || '#000000';
+    const fSize = isMini ? 9 : (t.fontSize || 16);
+
+    if (isEditor) {
+      // Bounding box for the Text Bar
+      const charWidth = fSize * 0.62;
+      const textLen = (t.text || '').length;
+      const boxW = Math.max(60, Math.round(textLen * charWidth + 24));
+      const boxH = Math.round(fSize * 1.5 + 8);
+      const boxX = Math.round(t.x - 12);
+      const boxY = Math.round(t.y - fSize - 2);
+
+      textsMarkup += `
+        <!-- Text Bar Box (Ortasından tutub basılı saxlayaraq istənilən yerə sürüşdürün) -->
+        <rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}" rx="5" ry="5" fill="${isSelected ? '#ffffff' : 'rgba(255,255,255,0.9)'}" stroke="${isSelected ? '#2563eb' : '#94a3b8'}" stroke-width="${isSelected ? '2' : '1.5'}" stroke-dasharray="${isSelected ? '4,3' : 'none'}" class="canvas-text-box-body" data-drag-type="text-box-body" data-drag-id="${t.id}" title="Ortasından tutub basılı saxlayaraq istədiyiniz yerə sürüşdürün (İki dəfə klikləyib redaktə edin)"/>
+        
+        <!-- Mətn -->
+        <text x="${t.x}" y="${t.y}" fill="${tColor}" font-family="'STIX Two Text', serif" font-size="${fSize}" font-weight="700" pointer-events="none">${escapeHtml(t.text)}</text>
+        
+        <!-- 4 Künc Tutacaqları (Ölçünü böyüdüb-kiçiltmək üçün) -->
+        <circle cx="${boxX}" cy="${boxY}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="tl" title="Küncdən tutub ölçünü dəyişin"/>
+        <circle cx="${boxX + boxW}" cy="${boxY}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="tr" title="Küncdən tutub ölçünü dəyişin"/>
+        <circle cx="${boxX + boxW}" cy="${boxY + boxH}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="br" title="Küncdən tutub ölçünü dəyişin"/>
+        <circle cx="${boxX}" cy="${boxY + boxH}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="bl" title="Küncdən tutub ölçünü dəyişin"/>
+        
+        <!-- Sil düyməsi (Qırmızı 'x' işarəsi) -->
+        <circle cx="${boxX + boxW + 6}" cy="${boxY - 4}" r="6.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" class="text-del-btn" data-action="delete-text" data-drag-id="${t.id}" title="Bu mətni sil"/>
+        <text x="${boxX + boxW + 6}" y="${boxY - 1}" font-size="9" fill="#ffffff" font-family="sans-serif" font-weight="800" text-anchor="middle" pointer-events="none">&times;</text>
+      `;
+    } else {
+      // Rəsmi DİM test vərəqində təmiz vektor mətni
+      textsMarkup += `
+        <text x="${t.x}" y="${t.y}" fill="${tColor}" font-family="'STIX Two Text', serif" font-size="${fSize}" font-weight="700">${escapeHtml(t.text)}</text>
+      `;
+    }
+  });
+
+  // 6. Təpə Nöqtələri Tutacaqları (YALNIZ Redaktorda Görünür!)
+  let vertexHandlesMarkup = '';
+  if (isEditor && state.vertices && state.vertices.length > 0) {
+    state.vertices.forEach((v, idx) => {
+      const vLabel = (vertsInput[idx] !== undefined && vertsInput[idx] !== '') ? vertsInput[idx] : (v.label || (idx === 0 ? 'A' : (idx === 1 ? 'B' : (idx === 2 ? 'C' : 'D'))));
+      vertexHandlesMarkup += `
+        <circle cx="${v.x}" cy="${v.y}" r="8" class="canvas-handle vertex-handle" data-drag-type="vertex" data-drag-index="${idx}" title="Təpə ${vLabel}: Tutub dartın və formanı dəyişin"/>
+        <text x="${v.x + 10}" y="${v.y - 8}" font-family="sans-serif" font-size="11" font-weight="800" fill="#1d4ed8" pointer-events="none">${vLabel}</text>
+      `;
+    });
+  } else if (!isEditor && state.vertices && state.vertices.length > 0 && !isMini) {
+    // Rəsmi test vərəqində təpə hərflərini zərif göstər
+    state.vertices.forEach((v, idx) => {
+      const vLabel = (vertsInput[idx] !== undefined && vertsInput[idx] !== '') ? vertsInput[idx] : (v.label || (idx === 0 ? 'A' : (idx === 1 ? 'B' : (idx === 2 ? 'C' : 'D'))));
+      const offX = v.x < 230 ? -16 : 8;
+      const offY = v.y < 140 ? -8 : 16;
+      vertexHandlesMarkup += `<text x="${v.x + offX}" y="${v.y + offY}" font-family="sans-serif" font-size="12" font-weight="700" fill="#000000">${vLabel}</text>`;
+    });
+  }
+
+  // 7. Yan Paneldən Yazılmış Ölçülər (a, b, c, h, α)
+  let sidebarLabelsMarkup = '';
+  if (state.vertices && state.vertices.length >= 3) {
+    const v1 = state.vertices[0];
+    const v2 = state.vertices[1];
+    const v3 = state.vertices[2];
+
+    if (lA) {
+      const mx = Math.round((v1.x + v3.x) / 2) - 20;
+      const my = Math.round((v1.y + v3.y) / 2);
+      sidebarLabelsMarkup += `<text x="${mx}" y="${my}" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700">${lA}</text>`;
+    }
+    if (lB) {
+      const mx = Math.round((v1.x + v2.x) / 2);
+      const my = Math.round((v1.y + v2.y) / 2) + 18;
+      sidebarLabelsMarkup += `<text x="${mx}" y="${my}" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700">${lB}</text>`;
+    }
+    if (lC) {
+      const mx = Math.round((v2.x + v3.x) / 2) + 14;
+      const my = Math.round((v2.y + v3.y) / 2);
+      sidebarLabelsMarkup += `<text x="${mx}" y="${my}" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#dc2626">${lC}</text>`;
+    }
+    if (lH) {
+      sidebarLabelsMarkup += `<text x="${Math.round(v3.x + 8)}" y="${Math.round(v3.y + 40)}" font-family="'STIX Two Text', serif" font-size="${fontSize}" font-weight="700" fill="#dc2626">${lH}</text>`;
+    }
+    if (lAng) {
+      sidebarLabelsMarkup += `<text x="${Math.round(v2.x - 30)}" y="${Math.round(v2.y - 10)}" font-family="'STIX Two Text', serif" font-size="${fontSize}">${lAng}</text>`;
+    }
+  }
+
+  return `
+    <svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="${isEditor ? 'interactive-studio-svg' : 'static-dim-svg'}">
+      ${defsMarkup}
+      ${baseShapeMarkup}
+      ${rightAnglesMarkup}
+      ${linesMarkup}
+      ${textsMarkup}
+      ${sidebarLabelsMarkup}
+      ${vertexHandlesMarkup}
+    </svg>
+  `;
+}
+
+// Update the Studio Canvas Preview
+function updateStudioCanvasPreview() {
+  const container = document.getElementById('studioSvgCanvasContainer');
+  if (!container) return;
+  container.innerHTML = renderStudioSvg(studioState, false, true);
+}
+
+// Open Shape Studio Modal
+function openShapeStudio() {
+  const modal = document.getElementById('shapeStudioModal');
+  if (modal) modal.classList.remove('hidden');
+  if (!studioState.vertices || studioState.vertices.length === 0) {
+    initStudioShape(studioState.baseShape || 'empty_right_triangle', false);
+  }
+
+  // Sync controls with studioState
+  const baseSelect = document.getElementById('studioBaseShapeSelect');
+  if (baseSelect && studioState.baseShape) {
+    baseSelect.value = studioState.baseShape;
+  }
+  const styleSelect = document.getElementById('studioLineStyleSelect');
+  if (styleSelect && studioState.lineStyle) {
+    styleSelect.value = studioState.lineStyle;
+  }
+  const widthSelect = document.getElementById('studioLineWidthSelect');
+  if (widthSelect && studioState.lineWidth) {
+    widthSelect.value = studioState.lineWidth;
+  }
+
+  // Sync colors
+  document.querySelectorAll('.color-circle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-color') === (studioState.color || '#000000'));
+  });
+
+  // Sync inputs
+  const lbls = studioState.labels || {};
+  const inA = document.getElementById('studioInputA');
+  if (inA) inA.value = lbls.a || '';
+  const inB = document.getElementById('studioInputB');
+  if (inB) inB.value = lbls.b || '';
+  const inC = document.getElementById('studioInputC');
+  if (inC) inC.value = lbls.c || '';
+  const inAng = document.getElementById('studioInputAngle');
+  if (inAng) inAng.value = lbls.angle || '';
+  const inVert = document.getElementById('studioInputVertices');
+  if (inVert) inVert.value = lbls.vertices || 'A, B, C';
+
+  const tbInput = document.getElementById('studioTextBarInput');
+  if (tbInput) {
+    if (studioState.selectedElementId && studioState.selectedElementType === 'text') {
+      const selTxt = studioState.texts.find(t => t.id === studioState.selectedElementId);
+      tbInput.value = selTxt ? selTxt.text : '';
+    } else if (studioState.texts && studioState.texts.length > 0) {
+      tbInput.value = studioState.texts[studioState.texts.length - 1].text;
+    } else {
+      tbInput.value = '';
+    }
+  }
+
+  setActivePaintTool('select');
+  updateStudioCanvasPreview();
+}
+
+// Close Shape Studio Modal
+function closeShapeStudio() {
+  const modal = document.getElementById('shapeStudioModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+// Set quick input in Studio
+window.setStudioInput = function(inputId, val) {
   const el = document.getElementById(inputId);
   if (el) {
     el.value = val;
+    el.dispatchEvent(new Event('input'));
     el.focus();
-    updateLiveGeometryPreview();
   }
 };
 
-// Append unit or symbol to the last active shape input
-window.appendUnitToActive = function(unit) {
-  const targetId = lastFocusedInputId || 'geomLabelC';
+// Append unit in Studio
+window.appendStudioUnit = function(unit) {
+  const targetId = lastFocusedStudioInputId || 'studioInputC';
   const el = document.getElementById(targetId);
   if (el) {
     if (unit === '?') {
@@ -689,26 +673,517 @@ window.appendUnitToActive = function(unit) {
     } else {
       el.value = `${el.value} ${unit}`.trim();
     }
+    el.dispatchEvent(new Event('input'));
     el.focus();
-    updateLiveGeometryPreview();
   }
 };
 
-// Update live geometry preview inside editor box
-function updateLiveGeometryPreview() {
-  const container = document.getElementById('geomSvgContainer');
-  if (!container) return;
+// Apply Studio Shape to the Question Form
+function applyStudioShape() {
+  attachedFigureData = JSON.parse(JSON.stringify(studioState));
+  closeShapeStudio();
 
-  const lA = document.getElementById('geomLabelA')?.value || '';
-  const lB = document.getElementById('geomLabelB')?.value || '';
-  const lC = document.getElementById('geomLabelC')?.value || '';
-  const lAng = document.getElementById('geomAngle')?.value || '';
+  // Update UI on question form
+  const notAtt = document.getElementById('figureNotAttachedView');
+  const attBar = document.getElementById('figureAttachedView');
+  const thumb = document.getElementById('attachedFigureThumb');
 
-  const svg = generateGeometrySvg(currentSelectedShape, { a: lA, b: lB, c: lC, angle: lAng }, false);
-  container.innerHTML = svg;
+  if (notAtt) notAtt.classList.add('hidden');
+  if (attBar) attBar.classList.remove('hidden');
+  if (thumb) {
+    thumb.innerHTML = renderStudioSvg(attachedFigureData, true, false);
+  }
+
+  showToast('✓ Həndəsi fiqur suala əlavə olundu!');
 }
 
-// Render Questions to DİM Examination Booklet
+// Remove attached figure
+function removeAttachedFigure() {
+  attachedFigureData = null;
+  const notAtt = document.getElementById('figureNotAttachedView');
+  const attBar = document.getElementById('figureAttachedView');
+
+  if (notAtt) notAtt.classList.remove('hidden');
+  if (attBar) attBar.classList.add('hidden');
+  showToast('Fiqur sualdan silindi');
+}
+
+// Reset Studio Shape
+function resetStudioShape() {
+  initStudioShape(studioState.baseShape || 'empty_right_triangle', false);
+  studioState.labels = { a: '', b: '', c: '', angle: '', vertices: 'A, B, C' };
+
+  // Reset inputs
+  ['studioInputA', 'studioInputB', 'studioInputC', 'studioInputAngle'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const tbInput = document.getElementById('studioTextBarInput');
+  if (tbInput) tbInput.value = '';
+  const vEl = document.getElementById('studioInputVertices');
+  if (vEl) vEl.value = 'A, B, C';
+
+  setActivePaintTool('select');
+  updateStudioCanvasPreview();
+  showToast('Fiqur sıfırlandı');
+}
+
+// ==========================================================================
+// PAİNT ALƏTLƏRİ VƏ İNTERAKTİV HƏNDƏSƏ ƏMƏLİYYATLARI
+// ==========================================================================
+
+function setActivePaintTool(tool) {
+  studioState.activeTool = tool;
+  document.querySelectorAll('.ribbon-tool-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-paint-tool') === tool);
+  });
+}
+
+// Sərbəst xətt (çubuq) əlavə et
+function addNewLine(isArrow = false) {
+  const newLine = {
+    id: 'line_' + Date.now(),
+    x1: 170,
+    y1: 85,
+    x2: 280,
+    y2: 215,
+    color: studioState.color || '#dc2626',
+    style: studioState.lineStyle || 'solid',
+    width: studioState.lineWidth || '2',
+    isArrow: isArrow
+  };
+  studioState.lines.push(newLine);
+  studioState.selectedElementId = newLine.id;
+  studioState.selectedElementType = 'line';
+  setActivePaintTool('select');
+  updateStudioCanvasPreview();
+  showToast(isArrow ? '🏹 Ox əlavə olundu - uclarından tutub uzadın və əyin' : '📏 Xətt əlavə olundu - uclarından tutub uzadın və əyin');
+}
+
+// 90° düz bucaq nişanı əlavə et
+function addNewRightAngle() {
+  const newRa = {
+    id: 'ra_' + Date.now(),
+    x: 180,
+    y: 190,
+    size: 20
+  };
+  studioState.rightAngles.push(newRa);
+  studioState.selectedElementId = newRa.id;
+  studioState.selectedElementType = 'right_angle';
+  setActivePaintTool('select');
+  updateStudioCanvasPreview();
+  showToast('📐 90° düz bucaq nişanı əlavə olundu - təpəyə yerləşdirin');
+}
+
+// Sərbəst Mətn / Yazı Qutusu (Text Bar) əlavə et
+function addTextBarToCanvas(defaultText) {
+  const input = document.getElementById('studioTextBarInput');
+  const txtVal = defaultText || (input ? input.value.trim() : '') || 'h = ?';
+  const newText = {
+    id: 'txt_' + Date.now(),
+    text: txtVal,
+    x: 210,
+    y: 135,
+    color: studioState.color || '#000000',
+    fontSize: 16
+  };
+  studioState.texts.push(newText);
+  studioState.selectedElementId = newText.id;
+  studioState.selectedElementType = 'text';
+  if (input) input.value = txtVal;
+  setActivePaintTool('select');
+  updateStudioCanvasPreview();
+  showToast('✓ Mətn qutusu kətana əlavə olundu - ortasından tutub istədiyiniz yerə sürüşdürün');
+}
+
+// Sürətli etiketlər (h = ?, m = ?, S = ? və s.)
+window.setTextBarValue = function(val) {
+  const input = document.getElementById('studioTextBarInput');
+  if (input) input.value = val;
+  if (studioState.selectedElementId && studioState.selectedElementType === 'text') {
+    const t = studioState.texts.find(item => item.id === studioState.selectedElementId);
+    if (t) {
+      t.text = val;
+      updateStudioCanvasPreview();
+      return;
+    }
+  }
+  addTextBarToCanvas(val);
+};
+
+// Ribbon düyməsi ilə mətn əlavə et
+function addNewTextPrompt() {
+  const input = document.getElementById('studioTextBarInput');
+  const defaultVal = input && input.value.trim() ? input.value.trim() : 'h = ?';
+  const txt = prompt('Fiqur üzərinə yazmaq istədiyiniz ölçü və ya mətni daxil edin:\n(Məsələn: h = ?, 6 sm, α, 30°, MN)', defaultVal);
+  if (txt && txt.trim()) {
+    addTextBarToCanvas(txt.trim());
+  }
+}
+
+// Seçilmiş xətti və ya elementi sil
+function deleteSelectedStudioElement() {
+  if (!studioState.selectedElementId) {
+    showToast('Zəhmət olmasa silmək üçün xətti və ya elementi seçin');
+    return;
+  }
+  const id = studioState.selectedElementId;
+  studioState.lines = studioState.lines.filter(l => l.id !== id);
+  studioState.rightAngles = studioState.rightAngles.filter(ra => ra.id !== id);
+  studioState.texts = studioState.texts.filter(t => t.id !== id);
+  studioState.selectedElementId = null;
+  studioState.selectedElementType = null;
+  updateStudioCanvasPreview();
+  showToast('Element silindi');
+}
+
+// Bütün əlavə xətləri və elementləri təmizlə
+function clearAllStudioCustomElements() {
+  if (confirm('Bütün əlavə edilmiş xətlər, bucaqlar və yazılar silinsin? Baza fiquru qalacaq.')) {
+    studioState.lines = [];
+    studioState.rightAngles = [];
+    studioState.texts = [];
+    studioState.selectedElementId = null;
+    studioState.selectedElementType = null;
+    updateStudioCanvasPreview();
+    showToast('Kətan təmizləndi');
+  }
+}
+
+// Rəng dəyişimi
+function setStudioColor(newColor) {
+  studioState.color = newColor;
+  if (studioState.selectedElementId) {
+    const line = studioState.lines.find(l => l.id === studioState.selectedElementId);
+    if (line) line.color = newColor;
+    const txt = studioState.texts.find(t => t.id === studioState.selectedElementId);
+    if (txt) txt.color = newColor;
+  }
+  updateStudioCanvasPreview();
+}
+
+// Xətt növü dəyişimi
+function setStudioLineStyle(newStyle) {
+  studioState.lineStyle = newStyle;
+  if (studioState.selectedElementId) {
+    const line = studioState.lines.find(l => l.id === studioState.selectedElementId);
+    if (line) line.style = newStyle;
+  }
+  updateStudioCanvasPreview();
+}
+
+// Xətt qalınlığı dəyişimi
+function setStudioLineWidth(newWidth) {
+  studioState.lineWidth = newWidth;
+  if (studioState.selectedElementId) {
+    const line = studioState.lines.find(l => l.id === studioState.selectedElementId);
+    if (line) line.width = newWidth;
+  }
+  updateStudioCanvasPreview();
+}
+
+// ==========================================================================
+// KƏTAN ÜZƏRİNDƏ SİÇAN VƏ TOXUNMA İLƏ TUTUB DARTMA (DRAG & DROP)
+// ==========================================================================
+
+let studioDragTarget = null;
+let studioDragStartPoint = null;
+let studioDragInitialData = null;
+
+function getSvgCanvasPoint(e, svgEl) {
+  const rect = svgEl.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const x = (clientX - rect.left) * (460 / rect.width);
+  const y = (clientY - rect.top) * (280 / rect.height);
+  return {
+    x: Math.round(Math.max(10, Math.min(450, x))),
+    y: Math.round(Math.max(10, Math.min(270, y)))
+  };
+}
+
+function onCanvasPointerDown(e) {
+  const container = document.getElementById('studioSvgCanvasContainer');
+  const svgEl = container ? container.querySelector('svg') : null;
+  if (!svgEl) return;
+
+  const target = e.target;
+
+  // 1. Text Box Silmə ('x' düyməsi)
+  const delBtn = target.closest ? (target.dataset.action === 'delete-text' ? target : target.closest('[data-action="delete-text"]')) : null;
+  if (delBtn) {
+    e.stopPropagation();
+    e.preventDefault();
+    const id = delBtn.dataset.dragId;
+    studioState.texts = studioState.texts.filter(t => t.id !== id);
+    if (studioState.selectedElementId === id) {
+      studioState.selectedElementId = null;
+      studioState.selectedElementType = null;
+      const tbInput = document.getElementById('studioTextBarInput');
+      if (tbInput) tbInput.value = '';
+    }
+    updateStudioCanvasPreview();
+    showToast('Mətn qutusu silindi');
+    return;
+  }
+
+  const pt = getSvgCanvasPoint(e, svgEl);
+  const dragType = target.dataset.dragType;
+
+  if (dragType) {
+    e.stopPropagation();
+    e.preventDefault();
+    studioDragStartPoint = pt;
+
+    if (dragType === 'vertex') {
+      const idx = parseInt(target.dataset.dragIndex, 10);
+      studioDragTarget = { type: 'vertex', index: idx };
+    } else if (dragType === 'circle-center') {
+      studioDragTarget = { type: 'circle-center' };
+    } else if (dragType === 'circle-radius') {
+      studioDragTarget = { type: 'circle-radius' };
+    } else if (dragType === 'line-p1') {
+      const id = target.dataset.dragId;
+      studioState.selectedElementId = id;
+      studioState.selectedElementType = 'line';
+      studioDragTarget = { type: 'line-p1', id };
+    } else if (dragType === 'line-p2') {
+      const id = target.dataset.dragId;
+      studioState.selectedElementId = id;
+      studioState.selectedElementType = 'line';
+      studioDragTarget = { type: 'line-p2', id };
+    } else if (dragType === 'line-body') {
+      const id = target.dataset.dragId;
+      const line = studioState.lines.find(l => l.id === id);
+      if (line) {
+        studioState.selectedElementId = id;
+        studioState.selectedElementType = 'line';
+        studioDragTarget = {
+          type: 'line-body',
+          id,
+          p1: { x: line.x1, y: line.y1 },
+          p2: { x: line.x2, y: line.y2 }
+        };
+      }
+    } else if (dragType === 'right-angle') {
+      const id = target.dataset.dragId;
+      const ra = studioState.rightAngles.find(r => r.id === id);
+      if (ra) {
+        studioState.selectedElementId = id;
+        studioState.selectedElementType = 'right_angle';
+        studioDragTarget = { type: 'right-angle', id, orig: { x: ra.x, y: ra.y } };
+      }
+    } else if (dragType === 'text-box-body' || dragType === 'text') {
+      const id = target.dataset.dragId;
+      const txt = studioState.texts.find(t => t.id === id);
+      if (txt) {
+        studioState.selectedElementId = id;
+        studioState.selectedElementType = 'text';
+        studioDragTarget = { type: 'text-box-body', id, origX: txt.x, origY: txt.y };
+        const tbInput = document.getElementById('studioTextBarInput');
+        if (tbInput) tbInput.value = txt.text || '';
+
+        // İki dəfə ardıcıl klikləyəndə birbaşa redaktə et
+        const now = Date.now();
+        if (txt._lastClick && (now - txt._lastClick < 350)) {
+          const edited = prompt('Mətni redaktə edin:', txt.text);
+          if (edited !== null && edited.trim()) {
+            txt.text = edited.trim();
+            if (tbInput) tbInput.value = edited.trim();
+            updateStudioCanvasPreview();
+          }
+          return;
+        }
+        txt._lastClick = now;
+      }
+    } else if (dragType === 'text-resize') {
+      const id = target.dataset.dragId;
+      const corner = target.dataset.corner;
+      const txt = studioState.texts.find(t => t.id === id);
+      if (txt) {
+        studioState.selectedElementId = id;
+        studioState.selectedElementType = 'text';
+        studioDragTarget = { type: 'text-resize', id, corner, origFontSize: txt.fontSize || 16 };
+        const tbInput = document.getElementById('studioTextBarInput');
+        if (tbInput) tbInput.value = txt.text || '';
+      }
+    }
+
+    target.classList.add('active-drag');
+    updateStudioCanvasPreview();
+  } else {
+    // Kətana boş yerdə klikləyəndə: Alətə uyğun yeni element yarat
+    if (studioState.activeTool === 'line' || studioState.activeTool === 'arrow') {
+      const isArrow = (studioState.activeTool === 'arrow');
+      const newLine = {
+        id: 'line_' + Date.now(),
+        x1: pt.x,
+        y1: pt.y,
+        x2: Math.min(450, pt.x + 80),
+        y2: pt.y,
+        color: studioState.color || '#dc2626',
+        style: studioState.lineStyle || 'solid',
+        width: studioState.lineWidth || '2',
+        isArrow: isArrow
+      };
+      studioState.lines.push(newLine);
+      studioState.selectedElementId = newLine.id;
+      studioState.selectedElementType = 'line';
+      studioDragTarget = { type: 'line-p2', id: newLine.id };
+      studioDragStartPoint = pt;
+      setActivePaintTool('select');
+      updateStudioCanvasPreview();
+    } else if (studioState.activeTool === 'right_angle') {
+      const newRa = {
+        id: 'ra_' + Date.now(),
+        x: pt.x,
+        y: pt.y,
+        size: 20
+      };
+      studioState.rightAngles.push(newRa);
+      studioState.selectedElementId = newRa.id;
+      studioState.selectedElementType = 'right_angle';
+      setActivePaintTool('select');
+      updateStudioCanvasPreview();
+    } else if (studioState.activeTool === 'text') {
+      const tbIn = document.getElementById('studioTextBarInput');
+      const defVal = (tbIn && tbIn.value.trim()) ? tbIn.value.trim() : 'h = ?';
+      const txt = prompt('Yazını daxil edin:', defVal);
+      if (txt && txt.trim()) {
+        const newText = {
+          id: 'txt_' + Date.now(),
+          text: txt.trim(),
+          x: pt.x,
+          y: pt.y,
+          color: studioState.color || '#000000',
+          fontSize: 16
+        };
+        studioState.texts.push(newText);
+        studioState.selectedElementId = newText.id;
+        studioState.selectedElementType = 'text';
+        if (tbIn) tbIn.value = txt.trim();
+        setActivePaintTool('select');
+        updateStudioCanvasPreview();
+      }
+    } else {
+      studioState.selectedElementId = null;
+      studioState.selectedElementType = null;
+      updateStudioCanvasPreview();
+    }
+  }
+}
+
+function onCanvasPointerMove(e) {
+  if (!studioDragTarget) return;
+
+  const container = document.getElementById('studioSvgCanvasContainer');
+  const svgEl = container ? container.querySelector('svg') : null;
+  if (!svgEl) return;
+
+  const pt = getSvgCanvasPoint(e, svgEl);
+  const dx = pt.x - studioDragStartPoint.x;
+  const dy = pt.y - studioDragStartPoint.y;
+
+  if (studioDragTarget.type === 'vertex') {
+    const v = studioState.vertices[studioDragTarget.index];
+    if (v) {
+      v.x = pt.x;
+      v.y = pt.y;
+    }
+  } else if (studioDragTarget.type === 'circle-center') {
+    if (studioState.circle) {
+      studioState.circle.cx = pt.x;
+      studioState.circle.cy = pt.y;
+    }
+  } else if (studioDragTarget.type === 'circle-radius') {
+    if (studioState.circle) {
+      const cdx = pt.x - studioState.circle.cx;
+      const cdy = pt.y - studioState.circle.cy;
+      studioState.circle.r = Math.max(15, Math.round(Math.sqrt(cdx * cdx + cdy * cdy)));
+    }
+  } else if (studioDragTarget.type === 'line-p1') {
+    const line = studioState.lines.find(l => l.id === studioDragTarget.id);
+    if (line) {
+      line.x1 = pt.x;
+      line.y1 = pt.y;
+    }
+  } else if (studioDragTarget.type === 'line-p2') {
+    const line = studioState.lines.find(l => l.id === studioDragTarget.id);
+    if (line) {
+      line.x2 = pt.x;
+      line.y2 = pt.y;
+    }
+  } else if (studioDragTarget.type === 'line-body') {
+    const line = studioState.lines.find(l => l.id === studioDragTarget.id);
+    if (line && studioDragTarget.p1 && studioDragTarget.p2) {
+      line.x1 = Math.round(Math.max(10, Math.min(450, studioDragTarget.p1.x + dx)));
+      line.y1 = Math.round(Math.max(10, Math.min(270, studioDragTarget.p1.y + dy)));
+      line.x2 = Math.round(Math.max(10, Math.min(450, studioDragTarget.p2.x + dx)));
+      line.y2 = Math.round(Math.max(10, Math.min(270, studioDragTarget.p2.y + dy)));
+    }
+  } else if (studioDragTarget.type === 'right-angle') {
+    const ra = studioState.rightAngles.find(r => r.id === studioDragTarget.id);
+    if (ra && studioDragTarget.orig) {
+      ra.x = Math.round(Math.max(10, Math.min(430, studioDragTarget.orig.x + dx)));
+      ra.y = Math.round(Math.max(30, Math.min(270, studioDragTarget.orig.y + dy)));
+    }
+  } else if (studioDragTarget.type === 'text-box-body') {
+    const txt = studioState.texts.find(t => t.id === studioDragTarget.id);
+    if (txt) {
+      txt.x = Math.round(Math.max(15, Math.min(435, studioDragTarget.origX + dx)));
+      txt.y = Math.round(Math.max(25, Math.min(265, studioDragTarget.origY + dy)));
+    }
+  } else if (studioDragTarget.type === 'text-resize') {
+    const txt = studioState.texts.find(t => t.id === studioDragTarget.id);
+    if (txt) {
+      const corner = studioDragTarget.corner;
+      let delta = 0;
+      if (corner === 'br') delta = (dx + dy) / 2;
+      else if (corner === 'tr') delta = (dx - dy) / 2;
+      else if (corner === 'bl') delta = (-dx + dy) / 2;
+      else if (corner === 'tl') delta = (-dx - dy) / 2;
+      const newSize = Math.max(10, Math.min(38, Math.round(studioDragTarget.origFontSize + delta * 0.2)));
+      txt.fontSize = newSize;
+    }
+  }
+
+  updateStudioCanvasPreview();
+}
+
+function onCanvasPointerUp(e) {
+  if (studioDragTarget) {
+    studioDragTarget = null;
+    updateStudioCanvasPreview();
+  }
+}
+
+function setupStudioCanvasEvents() {
+  const container = document.getElementById('studioSvgCanvasContainer');
+  if (!container) return;
+
+  container.addEventListener('mousedown', onCanvasPointerDown);
+  container.addEventListener('touchstart', onCanvasPointerDown, { passive: false });
+
+  window.addEventListener('mousemove', onCanvasPointerMove);
+  window.addEventListener('touchmove', onCanvasPointerMove, { passive: false });
+
+  window.addEventListener('mouseup', onCanvasPointerUp);
+  window.addEventListener('touchend', onCanvasPointerUp);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA') {
+        deleteSelectedStudioElement();
+      }
+    }
+  });
+}
+
+// ==========================================================================
+// 3. RENDER EXAM BOOKLET & QUESTION FLOW
+// ==========================================================================
 function renderExamBooklet() {
   const container = document.getElementById('dimQuestionsContainer');
   const emptyState = document.getElementById('noQuestionsNotice');
@@ -745,15 +1220,15 @@ function renderExamBooklet() {
     const qNum = idx + 1;
     let contentHtml = '';
 
-    // Render Geometry figure if present
+    // Render Geometry figure IF present
     let figureHtml = '';
-    if (q.svgShape) {
-      const svg = generateGeometrySvg(q.svgShape, q.shapeLabels || {});
+    if (q.figure) {
+      const svg = renderStudioSvg(q.figure, false, false);
       figureHtml = `<div class="dim-q-figure">${svg}</div>`;
     }
 
-    // Question body
-    if (q.type === 'qapali' || q.type === 'hendese') {
+    // Question body based on type
+    if (q.type === 'qapali') {
       const opts = q.options || {};
       const optsList = ['A', 'B', 'C', 'D', 'E'].map(letter => {
         const text = opts[letter] || '';
@@ -846,16 +1321,17 @@ function renderAnswerKey() {
 
   tbody.innerHTML = currentExam.questions.map((q, idx) => {
     let typeName = 'Qapalı';
-    if (q.type === 'hendese') typeName = 'Həndəsə (Fiqurlu)';
     if (q.type === 'aciq') typeName = 'Açıq (Kodlaşdırılan)';
     if (q.type === 'yazili') typeName = 'Yazılı Həlli Tələb Olunan';
     if (q.type === 'uygunluq') typeName = 'Uyğunlaşdırma';
-    if (q.type === 'situasiya') typeName = 'Situasiya / Kontekst';
+    if (q.type === 'situasiya') typeName = 'Situasiya';
+
+    const hasFig = q.figure ? ' (Fiqurlu)' : '';
 
     return `
       <tr>
         <td><strong>${idx + 1}</strong></td>
-        <td>${typeName}</td>
+        <td>${typeName}${hasFig}</td>
         <td><strong style="color: #1e3a8a;">${escapeHtml(q.correctAnswer || 'Qeyd edilməyib')}</strong></td>
         <td>${q.points || 1} bal</td>
       </tr>
@@ -920,7 +1396,6 @@ function setQuestionType(type) {
   });
 
   const optionsGroup = document.getElementById('optionsGroup');
-  const shapeSection = document.getElementById('shapeLibrarySection');
   const openGroup = document.getElementById('openAnswerGroup');
   const writtenGroup = document.getElementById('writtenAnswerGroup');
   const matchGroup = document.getElementById('matchingGroup');
@@ -934,23 +1409,14 @@ function setQuestionType(type) {
 
   if (type === 'qapali') {
     if (optionsGroup) optionsGroup.classList.remove('hidden');
-    if (shapeSection) shapeSection.classList.add('hidden');
-  } else if (type === 'hendese') {
-    if (optionsGroup) optionsGroup.classList.remove('hidden');
-    if (shapeSection) shapeSection.classList.remove('hidden');
-    updateLiveGeometryPreview();
   } else if (type === 'aciq') {
     if (openGroup) openGroup.classList.remove('hidden');
-    if (shapeSection) shapeSection.classList.add('hidden');
   } else if (type === 'yazili') {
     if (writtenGroup) writtenGroup.classList.remove('hidden');
-    if (shapeSection) shapeSection.classList.add('hidden');
   } else if (type === 'uygunluq') {
     if (matchGroup) matchGroup.classList.remove('hidden');
-    if (shapeSection) shapeSection.classList.add('hidden');
   } else if (type === 'situasiya') {
     if (situationGroup) situationGroup.classList.remove('hidden');
-    if (shapeSection) shapeSection.classList.add('hidden');
   }
 }
 
@@ -977,10 +1443,11 @@ function handleQuestionSubmit(e) {
     subject: currentExam.subject,
     points,
     difficulty,
-    text
+    text,
+    figure: attachedFigureData ? JSON.parse(JSON.stringify(attachedFigureData)) : null
   };
 
-  if (activeType === 'qapali' || activeType === 'hendese') {
+  if (activeType === 'qapali') {
     const optA = document.getElementById('optA').value.trim();
     const optB = document.getElementById('optB').value.trim();
     const optC = document.getElementById('optC').value.trim();
@@ -995,16 +1462,6 @@ function handleQuestionSubmit(e) {
 
     questionObj.options = { A: optA, B: optB, C: optC, D: optD, E: optE };
     questionObj.correctAnswer = checkedRadio ? checkedRadio.value : 'A';
-
-    if (activeType === 'hendese') {
-      questionObj.svgShape = currentSelectedShape;
-      questionObj.shapeLabels = {
-        a: document.getElementById('geomLabelA')?.value || '',
-        b: document.getElementById('geomLabelB')?.value || '',
-        c: document.getElementById('geomLabelC')?.value || '',
-        angle: document.getElementById('geomAngle')?.value || ''
-      };
-    }
   } else if (activeType === 'aciq') {
     const ans = document.getElementById('openCorrectAnswer').value.trim();
     if (!ans) {
@@ -1067,6 +1524,13 @@ function resetQuestionForm() {
   document.getElementById('questionPoints').value = '2';
   document.getElementById('questionDifficulty').value = 'Orta';
   editingQuestionId = null;
+  attachedFigureData = null;
+
+  const notAtt = document.getElementById('figureNotAttachedView');
+  const attBar = document.getElementById('figureAttachedView');
+  if (notAtt) notAtt.classList.remove('hidden');
+  if (attBar) attBar.classList.add('hidden');
+
   const cancelBtn = document.getElementById('cancelEditBtn');
   if (cancelBtn) cancelBtn.classList.add('hidden');
   const saveBtn = document.getElementById('saveQuestionBtn');
@@ -1091,7 +1555,28 @@ window.editQuestion = function(id) {
   document.getElementById('questionPoints').value = q.points || '2';
   document.getElementById('questionDifficulty').value = q.difficulty || 'Orta';
 
-  if (q.type === 'qapali' || q.type === 'hendese') {
+  // Restore attached figure
+  if (q.figure) {
+    attachedFigureData = JSON.parse(JSON.stringify(q.figure));
+    studioState = JSON.parse(JSON.stringify(q.figure));
+    if ((!studioState.vertices || studioState.vertices.length === 0) && !studioState.circle && !studioState.axes) {
+      initStudioShape(studioState.baseShape || 'empty_right_triangle', true);
+    }
+    const notAtt = document.getElementById('figureNotAttachedView');
+    const attBar = document.getElementById('figureAttachedView');
+    const thumb = document.getElementById('attachedFigureThumb');
+    if (notAtt) notAtt.classList.add('hidden');
+    if (attBar) attBar.classList.remove('hidden');
+    if (thumb) thumb.innerHTML = renderStudioSvg(attachedFigureData, true, false);
+  } else {
+    attachedFigureData = null;
+    const notAtt = document.getElementById('figureNotAttachedView');
+    const attBar = document.getElementById('figureAttachedView');
+    if (notAtt) notAtt.classList.remove('hidden');
+    if (attBar) attBar.classList.add('hidden');
+  }
+
+  if (q.type === 'qapali') {
     const opts = q.options || {};
     document.getElementById('optA').value = opts.A || '';
     document.getElementById('optB').value = opts.B || '';
@@ -1101,16 +1586,6 @@ window.editQuestion = function(id) {
 
     const radio = document.querySelector(`input[name="correctOption"][value="${q.correctAnswer}"]`);
     if (radio) radio.checked = true;
-
-    if (q.type === 'hendese' && q.svgShape) {
-      selectShape(q.svgShape);
-      const labels = q.shapeLabels || {};
-      if (document.getElementById('geomLabelA')) document.getElementById('geomLabelA').value = labels.a || '';
-      if (document.getElementById('geomLabelB')) document.getElementById('geomLabelB').value = labels.b || '';
-      if (document.getElementById('geomLabelC')) document.getElementById('geomLabelC').value = labels.c || '';
-      if (document.getElementById('geomAngle')) document.getElementById('geomAngle').value = labels.angle || '';
-      updateLiveGeometryPreview();
-    }
   } else if (q.type === 'aciq') {
     document.getElementById('openCorrectAnswer').value = q.correctAnswer || '';
   } else if (q.type === 'yazili') {
@@ -1140,7 +1615,7 @@ window.deleteQuestion = function(id) {
 };
 
 // ==========================================================================
-// TESTİ YÜKLƏMƏ MÜHƏRRİKİ (PDF və Word .doc Formatları)
+// 4. DOWNLOAD MÜHƏRRİKİ (PDF və Word .doc Formatları)
 // ==========================================================================
 function openDownloadModal() {
   const modal = document.getElementById('downloadModal');
@@ -1152,7 +1627,7 @@ function closeDownloadModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// PDF Sənədi Kimi Yüklə (Print-to-PDF)
+// PDF Yükləmə (Print-to-PDF)
 function downloadAsPdf() {
   closeDownloadModal();
   const incKeys = document.getElementById('includeAnswerKeyCheckbox')?.checked;
@@ -1193,7 +1668,6 @@ function downloadAsWordDoc() {
         body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.4; color: #000; }
         .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 15px; }
         .q-item { margin-bottom: 15px; }
-        .q-num { font-weight: bold; }
         .options { margin-left: 20px; }
         .opt { margin-bottom: 4px; }
       </style>
@@ -1213,7 +1687,11 @@ function downloadAsWordDoc() {
         <p><b>${qNum}.</b> ${escapeHtml(q.text)} <i>(${q.points || 1} bal)</i></p>
     `;
 
-    if (q.type === 'qapali' || q.type === 'hendese') {
+    if (q.figure) {
+      bodyHtml += `<div style="text-align: center; margin: 10px 0;">${renderStudioSvg(q.figure, false, false)}</div>`;
+    }
+
+    if (q.type === 'qapali') {
       const opts = q.options || {};
       bodyHtml += `<div class="options">`;
       ['A', 'B', 'C', 'D', 'E'].forEach(let => {
@@ -1233,7 +1711,6 @@ function downloadAsWordDoc() {
     bodyHtml += `</div>`;
   });
 
-  // Include Answer key if checked
   const incKeys = document.getElementById('includeAnswerKeyCheckbox')?.checked;
   if (incKeys) {
     bodyHtml += `
@@ -1290,22 +1767,181 @@ function showToast(msg) {
 document.addEventListener('DOMContentLoaded', () => {
   initStorage();
 
-  // Shape Category Filters
-  document.querySelectorAll('.shape-cat-btn').forEach(btn => {
+  // Fənn və Sinif seçimi
+  const subjSelect = document.getElementById('subjectSelect');
+  const gradeSelect = document.getElementById('gradeSelect');
+
+  if (subjSelect) {
+    subjSelect.value = currentExam.subject || 'Riyaziyyat';
+    subjSelect.addEventListener('change', (e) => {
+      currentExam.subject = e.target.value;
+      saveStorage();
+      updateMathToolbarVisibility(); // Math toolbar ONLY for Riyaziyyat/Fizika
+      renderExamBooklet();
+    });
+  }
+
+  if (gradeSelect) {
+    gradeSelect.value = currentExam.grade || '11-ci sinif (Buraxılış)';
+    gradeSelect.addEventListener('change', (e) => {
+      currentExam.grade = e.target.value;
+      saveStorage();
+      renderExamBooklet();
+    });
+  }
+
+  // Initial check for Math symbols toolbar visibility
+  updateMathToolbarVisibility();
+
+  // Shape Studio Modal Open / Close
+  const openStudioBtn = document.getElementById('openShapeStudioBtn');
+  if (openStudioBtn) openStudioBtn.addEventListener('click', openShapeStudio);
+
+  const editFigBtn = document.getElementById('editAttachedFigureBtn');
+  if (editFigBtn) {
+    editFigBtn.addEventListener('click', () => {
+      if (attachedFigureData) {
+        studioState = JSON.parse(JSON.stringify(attachedFigureData));
+      }
+      openShapeStudio();
+    });
+  }
+
+  const removeFigBtn = document.getElementById('removeAttachedFigureBtn');
+  if (removeFigBtn) removeFigBtn.addEventListener('click', removeAttachedFigure);
+
+  const closeStudioBtn = document.getElementById('closeShapeStudioBtn');
+  if (closeStudioBtn) closeStudioBtn.addEventListener('click', closeShapeStudio);
+
+  const applyStudioBtn = document.getElementById('applyStudioShapeBtn');
+  if (applyStudioBtn) applyStudioBtn.addEventListener('click', applyStudioShape);
+
+  const resetStudioBtn = document.getElementById('resetStudioShapeBtn');
+  if (resetStudioBtn) resetStudioBtn.addEventListener('click', resetStudioShape);
+
+  // Studio: Base Shape Dropdown
+  const baseSelect = document.getElementById('studioBaseShapeSelect');
+  if (baseSelect) {
+    baseSelect.addEventListener('change', (e) => {
+      initStudioShape(e.target.value, false);
+      updateStudioCanvasPreview();
+    });
+  }
+
+  // Studio: Paint Tools (Seç, Xətt, Bucaq, Ox, Mətn)
+  const toolSelectBtn = document.getElementById('toolSelect');
+  if (toolSelectBtn) {
+    toolSelectBtn.addEventListener('click', () => setActivePaintTool('select'));
+  }
+
+  const toolAddLineBtn = document.getElementById('toolAddLine');
+  if (toolAddLineBtn) {
+    toolAddLineBtn.addEventListener('click', () => addNewLine(false));
+  }
+
+  const toolAddRightAngleBtn = document.getElementById('toolAddRightAngle');
+  if (toolAddRightAngleBtn) {
+    toolAddRightAngleBtn.addEventListener('click', () => addNewRightAngle());
+  }
+
+  const toolAddArrowBtn = document.getElementById('toolAddArrow');
+  if (toolAddArrowBtn) {
+    toolAddArrowBtn.addEventListener('click', () => addNewLine(true));
+  }
+
+  const toolAddTextBtn = document.getElementById('toolAddText');
+  if (toolAddTextBtn) {
+    toolAddTextBtn.addEventListener('click', () => addNewTextPrompt());
+  }
+
+  // Studio: Silmə və Təmizləmə
+  const delElemBtn = document.getElementById('studioDeleteElementBtn');
+  if (delElemBtn) {
+    delElemBtn.addEventListener('click', deleteSelectedStudioElement);
+  }
+
+  const clearElemBtn = document.getElementById('studioClearElementsBtn');
+  if (clearElemBtn) {
+    clearElemBtn.addEventListener('click', clearAllStudioCustomElements);
+  }
+
+  // Studio: Color Buttons
+  document.querySelectorAll('.color-circle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.shape-cat-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.color-circle-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const cat = btn.getAttribute('data-cat');
-      renderShapeCards(cat);
+      const clr = btn.getAttribute('data-color') || '#000000';
+      setStudioColor(clr);
     });
   });
 
-  // Track focused shape label input
-  ['geomLabelA', 'geomLabelB', 'geomLabelC', 'geomAngle'].forEach(id => {
+  // Studio: Line Style & Width
+  const styleSelect = document.getElementById('studioLineStyleSelect');
+  if (styleSelect) {
+    styleSelect.addEventListener('change', (e) => {
+      setStudioLineStyle(e.target.value);
+    });
+  }
+  const widthSelect = document.getElementById('studioLineWidthSelect');
+  if (widthSelect) {
+    widthSelect.addEventListener('change', (e) => {
+      setStudioLineWidth(e.target.value);
+    });
+  }
+
+  // Setup interactive SVG canvas drag-and-drop
+  setupStudioCanvasEvents();
+  initStudioShape(studioState.baseShape || 'empty_right_triangle', true);
+
+  // Studio: Text Bar Input & Add Button
+  const tbInput = document.getElementById('studioTextBarInput');
+  const addTbBtn = document.getElementById('addTextBarBtn');
+
+  if (addTbBtn) {
+    addTbBtn.addEventListener('click', () => {
+      addTextBarToCanvas();
+    });
+  }
+
+  if (tbInput) {
+    tbInput.addEventListener('input', (e) => {
+      if (studioState.selectedElementId && studioState.selectedElementType === 'text') {
+        const t = studioState.texts.find(item => item.id === studioState.selectedElementId);
+        if (t) {
+          t.text = e.target.value;
+          updateStudioCanvasPreview();
+        }
+      }
+    });
+
+    tbInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!studioState.selectedElementId || studioState.selectedElementType !== 'text') {
+          addTextBarToCanvas();
+        }
+      }
+    });
+  }
+
+  // Studio: Input fields for measurements
+  const fieldMapping = {
+    'studioInputA': 'a',
+    'studioInputB': 'b',
+    'studioInputC': 'c',
+    'studioInputAngle': 'angle',
+    'studioInputVertices': 'vertices'
+  };
+
+  Object.keys(fieldMapping).forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('focus', () => { lastFocusedInputId = id; });
-      el.addEventListener('input', updateLiveGeometryPreview);
+      el.addEventListener('focus', () => { lastFocusedStudioInputId = id; });
+      el.addEventListener('input', (e) => {
+        const key = fieldMapping[id];
+        studioState.labels[key] = e.target.value;
+        updateStudioCanvasPreview();
+      });
     }
   });
 
@@ -1326,18 +1962,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Auto question text button
-  const autoBtn = document.getElementById('autoQuestionTextBtn');
-  if (autoBtn) {
-    autoBtn.addEventListener('click', () => {
-      const qText = document.getElementById('questionText');
-      if (qText) {
-        qText.value = 'Şəkildə verilmiş fiqura əsasən, axtarılan göstəricini tapın.';
-        qText.focus();
-      }
-    });
-  }
-
   // Form Submit
   const qForm = document.getElementById('questionForm');
   if (qForm) qForm.addEventListener('submit', handleQuestionSubmit);
@@ -1345,38 +1969,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelBtn = document.getElementById('cancelEditBtn');
   if (cancelBtn) cancelBtn.addEventListener('click', cancelEditing);
 
-  // Clean Header Dropdowns
-  const subjSelect = document.getElementById('subjectSelect');
-  const gradeSelect = document.getElementById('gradeSelect');
-
-  if (subjSelect) {
-    subjSelect.value = currentExam.subject || 'Riyaziyyat';
-    subjSelect.addEventListener('change', (e) => {
-      currentExam.subject = e.target.value;
-      saveStorage();
-      renderExamBooklet();
-    });
-  }
-
-  if (gradeSelect) {
-    gradeSelect.value = currentExam.grade || '11-ci sinif (Buraxılış)';
-    gradeSelect.addEventListener('change', (e) => {
-      currentExam.grade = e.target.value;
-      saveStorage();
-      renderExamBooklet();
-    });
-  }
-
-  // Download Exam Button (replaces Print)
+  // Download Exam Button (Modal)
   const downloadBtn = document.getElementById('downloadExamBtn');
-  if (downloadBtn) {
-    downloadBtn.addEventListener('click', openDownloadModal);
-  }
+  if (downloadBtn) downloadBtn.addEventListener('click', openDownloadModal);
 
   const closeModBtn = document.getElementById('closeDownloadModalBtn');
-  if (closeModBtn) {
-    closeModBtn.addEventListener('click', closeDownloadModal);
-  }
+  if (closeModBtn) closeModBtn.addEventListener('click', closeDownloadModal);
 
   const pdfOpt = document.getElementById('downloadPdfOption');
   if (pdfOpt) pdfOpt.addEventListener('click', downloadAsPdf);
@@ -1384,7 +1982,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const docOpt = document.getElementById('downloadDocOption');
   if (docOpt) docOpt.addEventListener('click', downloadAsWordDoc);
 
-  // Close modal when clicking outside
   const modal = document.getElementById('downloadModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
@@ -1437,8 +2034,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Initialize View
-  renderShapeCards('ucbucaq');
-  selectShape('right_triangle');
+  // Initial View Setup
+  setQuestionType('qapali');
   renderExamBooklet();
 });

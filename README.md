@@ -1,58 +1,32 @@
-# DİM SualUsta - Müəllimlər üçün DİM Standartında İmtahan və Test Hazırlayıcı Platforma
+# DİM SualUsta - Müəllimlər üçün DİM Standartında İmtahan və Test Hazırlayıcı
 
-Azərbaycan Respublikası Dövlət İmtahan Mərkəzinin (DİM) buraxılış (9 və 11-ci sinif) və ali məktəblərə qəbul (blok) imtahanları modelinə tam uyğunlaşdırılmış imtahan hazırlama mühiti.
-
----
-
-## 🎯 DİM İmtahan Sual Tiplərinin Analizi
-
-Dövlət İmtahan Mərkəzinin rəsmi imtahan strukturuna əsasən sistemdə aşağıdakı sual tipləri üçün xüsusi alətlər təqdim edilmişdir:
-
-1. **Qapalı tipli test tapşırıqları (5 variantlı: A, B, C, D, E)**:
-   - 1 düzgün cavablı klassik test modeli.
-   - Sualın balı və çətinlik dərəcəsi (Asan, Orta, Çətin).
-
-2. **Riyazi Həndəsi Fiqurlu Suallar (SVG Geometry Engine)**:
-   - DİM-in ən çox istifadə etdiyi həndəsə rəsmləri üçün daxili generator:
-     - Düzbucaqlı üçbucaq (Pifaqor, katetlər, bucaq $\alpha$, hipotenuz)
-     - Bərabəryanlı üçbucaq (yan tərəflər, oturacaq, hündürlük $h$)
-     - Çevrə və vətər / mərkəz $O$ və radius $R$
-     - Çevrə və toxunan xətt ($PT \perp OT$)
-     - Trapesiya və paraleloqram (oturacaqlar və hündürlüklər)
-     - Dekart koordinat müstəvisi (X-Y oxları və funksiya qrafiki)
-   - Tərəf ölçüləri, hərflər və bucaqlar müəllim tərəfindən asanlıqla daxil edilir və dərhal vektor formatında suala əlavə olunur.
-
-3. **Açıq tipli test tapşırıqları (Kodlaşdırılan / Ədədi cavab)**:
-   - Variantı olmayan, şagirdin cavab vərəqində rəqəmləri kodlaşdırmalı olduğu model (məs: 24, 210, -5).
-
-4. **Yazılı həlli tələb olunan açıq suallar (Mərhələli meyarlar)**:
-   - Həll xanası və qiymətləndirmə meyarları ilə təmin olunmuş suallar.
-
-5. **Uyğunlaşdırma tipli tapşırıqlar (1, 2, 3 ↔ a, b, c, d, e)**:
-   - Sol və sağ sütunların müqayisəsi (məs: $1 \to c; 2 \to a,d; 3 \to b$).
-
-6. **Situasiya / Kontekstual tapşırıqlar**:
-   - Giriş mətni / təsvir və ona aid alt suallar bloku.
+Azərbaycan Respublikası Dövlət İmtahan Mərkəzinin (DİM) buraxılış (9 və 11-ci sinif) və ali məktəblərə qəbul (blok) imtahanları modelinə tam uyğunlaşdırılmış, məktəb müəllimləri üçün nəzərdə tutulmuş müasir imtahan hazırlama platforması.
 
 ---
 
-## 🛠️ Müəllimlər üçün Alətlər
+## 🌟 Ən Son Yeniliklər
 
-- **Riyazi Simvol Paneli (Virtual Math Keyboard)**: $\sqrt{\phantom{x}}$, $x^2$, $\pi$, $\alpha$, $\beta$, $\angle$, $\triangle$, $\perp$, $\parallel$, $\in$, $\le$, $\ge$, $\neq$, $\pm$ və s. simvolları bir kliklə sualın mətninə əlavə etmək.
-- **Canlı DİM İmtahan Kitabçası (Booklet Preview)**: Sual əlavə edildikcə sağ tərəfdə rəsmi DİM şrifti (`STIX Two Text`) və 2 sütunlu A4 formatında canlı səhifələnmə.
-- **DİM Optik Cavab Kartı (Bubble Answer Sheet)**: Şagirdlərin imtahanda kodlaşdırma təcrübəsi qazanması üçün avtomatik yaradılan cavab kartı.
-- **Düzgün Cavablar Açarı (Answer Key)**: Müəllimin yoxlaması üçün avtomatik çıxarılan cavab cədvəli.
-- **Bir Kliklə Çap və PDF**: `window.print()` ilə bütün idarəetmə düymələri gizlənir və yalnız rəsmi DİM imtahan vərəqi çap olunur.
-- **Yaddaşda Saxlama**: Bütün suallar brauzerin `localStorage` yaddaşında qalır.
+1. **Sade və Təmiz Başlıq (Header)**:
+   - Gərəksiz mətnlərdən təmizlənmiş, yalnız **Fənn adı** və **Sinif / Səviyyə** seçimi ilə minimalist dizayn.
+
+2. **Geniş Həndəsi Fiqurlar Kataloqu (Xüsusilə Üçbucaqlar)**:
+   - Müəllimlər üçün hazır vizual fiqur seçimi:
+     - **Üçbucaqlar (11 növ)**: Düzbucaqlı üçbucaq, hipotenuza çəkilmiş hündürlük, bərabəryanlı üçbucaq, bərabəryanlıda hündürlük, bərabərtərəfli üçbucaq (60°), ixtiyari üçbucaq, daxilinə çevrə çəkilmiş üçbucaq, xaricinə çevrə çəkilmiş üçbucaq, orta xətt, korbucaqlı üçbucaq, xarici bucaq.
+     - **Dördbucaqlılar (7 növ)**: Düzbucaqlı, Kvadrat, Romb, Paraleloqram, Trapesiya (bərabəryanlı, düzbucaqlı).
+     - **Çevrə & Qrafik (6 növ)**: Vətər, toxunanlar, mərkəzi və daxilə çəkilmiş bucaqlar, kəsişən vətərlər, Parabola və düz xətt qrafiki.
+   - **İnteraktiv Ölçü Redaktoru**: Müəllim istədiyi tərəfə bir kliklə ölçü, dərəcə və ya `?` (axtarılan) qoya bilir və fiqur canlı yenilənir.
+
+3. **Birbaşa Testi Yükləmə (Download) Sistemi**:
+   - Əvvəlki "Çap et" əvəzinə tam funksional **"Testi Yüklə"** menyusu:
+     - 📄 **PDF Sənədi Kimi Yüklə**: Rəsmi 2 sütunlu A4 DİM test vərəqi formatında.
+     - 📝 **Word (.doc) Faylı Kimi Yüklə**: Microsoft Word və ya LibreOffice-də birbaşa açılıb redaktə oluna bilən sənəd.
+     - Düzgün cavablar açarı və şagird üçün optik cavab kartını birlikdə yükləmək imkanı.
 
 ---
 
-## 🚀 Saytı Açmaq Qaydası
+## 📂 Layihə Faylları
 
-Platformanı birbaşa brauzerdə açmaq üçün:
-
-```bash
-open /Users/pasha/.gemini/antigravity/scratch/dim-exam-builder/index.html
-```
-
-Və ya Finder-dən [`index.html`](file:///Users/pasha/.gemini/antigravity/scratch/dim-exam-builder/index.html) faylına iki dəfə klikləyərək aça bilərsiniz.
+- [**`index.html`**](file:///Users/pasha/.gemini/antigravity/scratch/dim-exam-builder/index.html) — Əsas səhifə, təmiz başlıq, fiqurlar kataloqu və yükləmə pəncərəsi.
+- [**`style.css`**](file:///Users/pasha/.gemini/antigravity/scratch/dim-exam-builder/style.css) — Minimalist UI, fiqur kartları və A4 çap/yükləmə stilləri.
+- [**`app.js`**](file:///Users/pasha/.gemini/antigravity/scratch/dim-exam-builder/app.js) — 24 hazır fiqurun SVG vektor mühərriki, interaktiv ölçü daxiletməsi, PDF və Word ixracı.
+- [**`README.md`**](file:///Users/pasha/.gemini/antigravity/scratch/dim-exam-builder/README.md) — Sənədləşmə.

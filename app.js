@@ -481,7 +481,7 @@ function renderStudioSvg(state, isMini = false, isEditor = false) {
   // 5. Müəllimin Əlavə Etdiyi Sərbəst Yazılar / Text Bar
   let textsMarkup = '';
   (state.texts || []).forEach(t => {
-    const isSelected = (isEditor && (studioState.selectedElementId === t.id || state.texts.length === 1));
+    const isSelected = (isEditor && studioState.selectedElementId === t.id);
     const tColor = t.color || '#000000';
     const fSize = isMini ? 9 : (t.fontSize || 16);
 
@@ -489,28 +489,38 @@ function renderStudioSvg(state, isMini = false, isEditor = false) {
       // Bounding box for the Text Bar
       const charWidth = fSize * 0.62;
       const textLen = (t.text || '').length;
-      const boxW = Math.max(60, Math.round(textLen * charWidth + 24));
+      const boxW = Math.max(50, Math.round(textLen * charWidth + 20));
       const boxH = Math.round(fSize * 1.5 + 8);
-      const boxX = Math.round(t.x - 12);
+      const boxX = Math.round(t.x - 10);
       const boxY = Math.round(t.y - fSize - 2);
 
-      textsMarkup += `
-        <!-- Text Bar Box (Ortasından tutub basılı saxlayaraq istənilən yerə sürüşdürün) -->
-        <rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}" rx="5" ry="5" fill="${isSelected ? '#ffffff' : 'rgba(255,255,255,0.9)'}" stroke="${isSelected ? '#2563eb' : '#94a3b8'}" stroke-width="${isSelected ? '2' : '1.5'}" stroke-dasharray="${isSelected ? '4,3' : 'none'}" class="canvas-text-box-body" data-drag-type="text-box-body" data-drag-id="${t.id}" title="Ortasından tutub basılı saxlayaraq istədiyiniz yerə sürüşdürün (İki dəfə klikləyib redaktə edin)"/>
-        
-        <!-- Mətn -->
-        <text x="${t.x}" y="${t.y}" fill="${tColor}" font-family="'STIX Two Text', serif" font-size="${fSize}" font-weight="700" pointer-events="none">${escapeHtml(t.text)}</text>
-        
-        <!-- 4 Künc Tutacaqları (Ölçünü böyüdüb-kiçiltmək üçün) -->
-        <circle cx="${boxX}" cy="${boxY}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="tl" title="Küncdən tutub ölçünü dəyişin"/>
-        <circle cx="${boxX + boxW}" cy="${boxY}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="tr" title="Küncdən tutub ölçünü dəyişin"/>
-        <circle cx="${boxX + boxW}" cy="${boxY + boxH}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="br" title="Küncdən tutub ölçünü dəyişin"/>
-        <circle cx="${boxX}" cy="${boxY + boxH}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="bl" title="Küncdən tutub ölçünü dəyişin"/>
-        
-        <!-- Sil düyməsi (Qırmızı 'x' işarəsi) -->
-        <circle cx="${boxX + boxW + 6}" cy="${boxY - 4}" r="6.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" class="text-del-btn" data-action="delete-text" data-drag-id="${t.id}" title="Bu mətni sil"/>
-        <text x="${boxX + boxW + 6}" y="${boxY - 1}" font-size="9" fill="#ffffff" font-family="sans-serif" font-weight="800" text-anchor="middle" pointer-events="none">&times;</text>
-      `;
+      if (isSelected) {
+        // YALNIZ SEÇİLDİKDƏ: Qırıq-qırıq xətlər, 4 künc dairəsi və silmə düyməsi görünür!
+        textsMarkup += `
+          <!-- Text Bar Box Seçim Çərçivəsi (Ortasından tutub istənilən yerə sürüşdürmək üçün) -->
+          <rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}" rx="4" ry="4" fill="rgba(255,255,255,0.92)" stroke="#2563eb" stroke-width="1.8" stroke-dasharray="4,3" class="canvas-text-box-body" data-drag-type="text-box-body" data-drag-id="${t.id}" title="Ortasından tutub istədiyiniz yerə sürüşdürün (İki dəfə klikləyib redaktə edin)"/>
+          
+          <!-- Mətn -->
+          <text x="${t.x}" y="${t.y}" fill="${tColor}" font-family="'STIX Two Text', serif" font-size="${fSize}" font-weight="700" pointer-events="none">${escapeHtml(t.text)}</text>
+          
+          <!-- 4 Künc Tutacaqları (Ölçünü böyüdüb-kiçiltmək üçün) -->
+          <circle cx="${boxX}" cy="${boxY}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="tl" title="Küncdən tutub ölçünü dəyişin"/>
+          <circle cx="${boxX + boxW}" cy="${boxY}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="tr" title="Küncdən tutub ölçünü dəyişin"/>
+          <circle cx="${boxX + boxW}" cy="${boxY + boxH}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="br" title="Küncdən tutub ölçünü dəyişin"/>
+          <circle cx="${boxX}" cy="${boxY + boxH}" r="5.5" class="canvas-handle text-corner-handle" data-drag-type="text-resize" data-drag-id="${t.id}" data-corner="bl" title="Küncdən tutub ölçünü dəyişin"/>
+          
+          <!-- Sil düyməsi (Qırmızı 'x' işarəsi) -->
+          <circle cx="${boxX + boxW + 5}" cy="${boxY - 4}" r="6.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" class="text-del-btn" data-action="delete-text" data-drag-id="${t.id}" title="Bu mətni sil"/>
+          <text x="${boxX + boxW + 5}" y="${boxY - 1}" font-size="9" fill="#ffffff" font-family="sans-serif" font-weight="800" text-anchor="middle" pointer-events="none">&times;</text>
+        `;
+      } else {
+        // SEÇİLMƏDİKDƏ: Tamamilə təmiz görünüş! Qırıq xətlər və künc dairələri YOXDUR!
+        // Müəllim istədiyi vaxt yazının üstünə klikləyib seçə bilsin deyə şəffaf toxunma zonası:
+        textsMarkup += `
+          <rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}" fill="transparent" stroke="none" class="canvas-text-unselected-hit" data-drag-type="text-box-body" data-drag-id="${t.id}" title="Yazının üstünə klikləyərək seçin və ya tutub daşıyın"/>
+          <text x="${t.x}" y="${t.y}" fill="${tColor}" font-family="'STIX Two Text', serif" font-size="${fSize}" font-weight="700" pointer-events="none">${escapeHtml(t.text)}</text>
+        `;
+      }
     } else {
       // Rəsmi DİM test vərəqində təmiz vektor mətni
       textsMarkup += `
@@ -980,7 +990,7 @@ function onCanvasPointerDown(e) {
       if (txt) {
         studioState.selectedElementId = id;
         studioState.selectedElementType = 'text';
-        studioDragTarget = { type: 'text-box-body', id, origX: txt.x, origY: txt.y };
+        studioDragTarget = { type: 'text-box-body', id, origX: txt.x, origY: txt.y, hasMoved: false };
         const tbInput = document.getElementById('studioTextBarInput');
         if (tbInput) tbInput.value = txt.text || '';
 
@@ -1131,6 +1141,9 @@ function onCanvasPointerMove(e) {
   } else if (studioDragTarget.type === 'text-box-body') {
     const txt = studioState.texts.find(t => t.id === studioDragTarget.id);
     if (txt) {
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        studioDragTarget.hasMoved = true;
+      }
       txt.x = Math.round(Math.max(15, Math.min(435, studioDragTarget.origX + dx)));
       txt.y = Math.round(Math.max(25, Math.min(265, studioDragTarget.origY + dy)));
     }
@@ -1153,6 +1166,12 @@ function onCanvasPointerMove(e) {
 
 function onCanvasPointerUp(e) {
   if (studioDragTarget) {
+    // Əgər müəllim mətni tutub istədiyi yerə sürüşdürüb qoydusa (hasMoved === true):
+    // İstediyi yerə qoyduqda ətrafındakı qırıq xətlər və künc dairələri dərhal yox olsun!
+    if (studioDragTarget.type === 'text-box-body' && studioDragTarget.hasMoved) {
+      studioState.selectedElementId = null;
+      studioState.selectedElementType = null;
+    }
     studioDragTarget = null;
     updateStudioCanvasPreview();
   }

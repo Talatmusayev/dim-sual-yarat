@@ -1432,6 +1432,15 @@ body {
   stroke-width: 2.5px !important;
 }
 
+.canvas-text-unselected-hit {
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.canvas-text-unselected-hit:hover {
+  cursor: grab;
+}
+
 .text-corner-handle {
   fill: #ffffff;
   stroke: #2563eb;
